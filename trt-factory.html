@@ -541,6 +541,87 @@ section[id], div[id] { scroll-margin-top:0; }
 .pole:hover .pole-tag { background:rgba(201,168,76,.06); border-color:rgba(201,168,76,.4); }
 
 /* ═══════════════════════════════════════════
+   TEAM
+═══════════════════════════════════════════ */
+#team { background:var(--grey); }
+.team-hd { padding:var(--pad-y) var(--pad-x) 48px; }
+.team-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:rgba(201,168,76,.05);
+}
+.tm-card {
+  background:var(--grey); padding:56px 44px;
+  position:relative; overflow:hidden;
+  transition:background .5s;
+  display:flex; flex-direction:column;
+}
+.tm-card:nth-child(1):hover { background:rgba(201,168,76,.05); }
+.tm-card:nth-child(2):hover { background:rgba(232,201,106,.04); }
+.tm-card:nth-child(3):hover { background:rgba(196,178,138,.04); }
+.tm-card::after {
+  content:''; position:absolute; left:0; top:0;
+  width:2px; height:100%;
+  transform:scaleY(0); transform-origin:top;
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.tm-card:nth-child(1)::after { background:var(--gold); }
+.tm-card:nth-child(2)::after { background:var(--gold-light); }
+.tm-card:nth-child(3)::after { background:var(--gold-cold); }
+.tm-card:hover::after { transform:scaleY(1); }
+.tm-visual {
+  height:160px; margin-bottom:36px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(201,168,76,.07);
+  position:relative; overflow:hidden;
+  background:var(--black);
+}
+.tm-visual-ltr {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:140px; line-height:1;
+  color:transparent; position:absolute;
+  bottom:-20px; right:8px;
+  pointer-events:none; user-select:none;
+  transition:-webkit-text-stroke-color .4s;
+}
+.tm-card:nth-child(1) .tm-visual-ltr { -webkit-text-stroke:1px rgba(201,168,76,.08); }
+.tm-card:nth-child(2) .tm-visual-ltr { -webkit-text-stroke:1px rgba(232,201,106,.07); }
+.tm-card:nth-child(3) .tm-visual-ltr { -webkit-text-stroke:1px rgba(196,178,138,.07); }
+.tm-card:nth-child(1):hover .tm-visual-ltr { -webkit-text-stroke-color:rgba(201,168,76,.2); }
+.tm-card:nth-child(2):hover .tm-visual-ltr { -webkit-text-stroke-color:rgba(232,201,106,.17); }
+.tm-card:nth-child(3):hover .tm-visual-ltr { -webkit-text-stroke-color:rgba(196,178,138,.17); }
+.tm-visual-ico {
+  position:relative; z-index:1;
+  opacity:.45; transition:opacity .4s, transform .4s;
+}
+.tm-card:hover .tm-visual-ico { opacity:.9; transform:scale(1.05); }
+.tm-num {
+  font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.4em;
+  color:var(--text-dim); margin-bottom:16px;
+}
+.tm-role {
+  font-family:'Syncopate',sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:.3em; text-transform:uppercase; margin-bottom:10px;
+}
+.tm-card:nth-child(1) .tm-role { color:var(--gold); }
+.tm-card:nth-child(2) .tm-role { color:var(--gold-light); }
+.tm-card:nth-child(3) .tm-role { color:var(--gold-cold); }
+.tm-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(24px,2.8vw,38px); line-height:1.1;
+  letter-spacing:.03em; margin-bottom:8px; color:var(--white);
+}
+.tm-sep { width:28px; height:1px; background:rgba(201,168,76,.3); margin-bottom:20px; }
+.tm-bio { font-size:13px; line-height:1.85; color:var(--text-dim); flex:1; margin-bottom:28px; }
+.tm-skills { display:flex; flex-wrap:wrap; gap:8px; list-style:none; }
+.tm-skill {
+  font-family:'Syncopate',sans-serif; font-size:7.5px; letter-spacing:.15em;
+  padding:5px 10px; border:1px solid rgba(201,168,76,.2);
+  text-transform:uppercase; color:var(--text-dim);
+  transition:color .3s, border-color .3s;
+}
+.tm-card:hover .tm-skill { color:var(--gold); border-color:rgba(201,168,76,.4); }
+
+/* ═══════════════════════════════════════════
    PROCESS
 ═══════════════════════════════════════════ */
 #process { background:var(--grey); padding:var(--pad-y) var(--pad-x); }
@@ -656,6 +737,72 @@ section[id], div[id] { scroll-margin-top:0; }
   transition:color .4s, gap .4s;
 }
 .svc:hover .svc-arr { color:var(--gold); gap:18px; }
+
+/* ═══════════════════════════════════════════
+   PORTFOLIO
+═══════════════════════════════════════════ */
+#portfolio { background:var(--grey); }
+.ptf-hd { padding:var(--pad-y) var(--pad-x) 56px; }
+.ptf-panels {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:rgba(201,168,76,.05);
+  min-height:58vh;
+}
+.ptf-panel {
+  background:var(--grey); padding:52px 36px;
+  position:relative; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  cursor:default; transition:background .5s;
+}
+.ptf-panel:nth-child(1):hover { background:rgba(201,168,76,.04); }
+.ptf-panel:nth-child(2):hover { background:rgba(232,201,106,.032); }
+.ptf-panel:nth-child(3):hover { background:rgba(196,178,138,.032); }
+.ptf-panel:nth-child(4):hover { background:rgba(201,168,76,.025); }
+.ptf-panel::after {
+  content:''; position:absolute; left:0; top:0;
+  width:2px; height:100%;
+  transform:scaleY(0); transform-origin:top;
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.ptf-panel:nth-child(1)::after { background:var(--gold); }
+.ptf-panel:nth-child(2)::after { background:var(--gold-light); }
+.ptf-panel:nth-child(3)::after { background:var(--gold-cold); }
+.ptf-panel:nth-child(4)::after { background:var(--gold-dark); }
+.ptf-panel:hover::after { transform:scaleY(1); }
+.ptf-panel-ltr {
+  position:absolute; font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(120px,18vw,260px); line-height:1;
+  color:transparent;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none; user-select:none;
+  transition:-webkit-text-stroke-color .5s;
+}
+.ptf-panel:nth-child(1) .ptf-panel-ltr { -webkit-text-stroke:1px rgba(201,168,76,.06); }
+.ptf-panel:nth-child(2) .ptf-panel-ltr { -webkit-text-stroke:1px rgba(232,201,106,.05); }
+.ptf-panel:nth-child(3) .ptf-panel-ltr { -webkit-text-stroke:1px rgba(196,178,138,.05); }
+.ptf-panel:nth-child(4) .ptf-panel-ltr { -webkit-text-stroke:1px rgba(201,168,76,.05); }
+.ptf-panel:hover .ptf-panel-ltr { -webkit-text-stroke-color:rgba(201,168,76,.16); }
+.ptf-cnt { position:relative; z-index:1; }
+.ptf-type {
+  font-family:'Syncopate',sans-serif; font-size:7px; letter-spacing:.4em;
+  text-transform:uppercase; color:var(--text-dim); margin-bottom:12px;
+  transition:color .3s;
+}
+.ptf-panel:nth-child(1):hover .ptf-type { color:var(--gold); }
+.ptf-panel:nth-child(2):hover .ptf-type { color:var(--gold-light); }
+.ptf-panel:nth-child(3):hover .ptf-type { color:var(--gold-cold); }
+.ptf-panel:nth-child(4):hover .ptf-type { color:var(--gold); }
+.ptf-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(22px,2.6vw,36px); line-height:1;
+  letter-spacing:.03em; color:var(--white); margin-bottom:14px;
+}
+.ptf-desc {
+  font-size:12px; line-height:1.7; color:var(--text-dim);
+  opacity:0; transform:translateY(8px);
+  transition:opacity .4s, transform .4s;
+}
+.ptf-panel:hover .ptf-desc { opacity:1; transform:translateY(0); }
 
 /* ═══════════════════════════════════════════
    DIFFERENCE
@@ -863,6 +1010,14 @@ body.menu-open { overflow:hidden; }
   .a-tri-meta { display:none; }
   .a-left  { border-right:none; border-bottom:1px solid rgba(201,168,76,.07); }
 
+  .team-grid { grid-template-columns:1fr; }
+  .tm-visual { height:120px; }
+  .tm-visual-ltr { font-size:100px; }
+
+  .ptf-panels { grid-template-columns:repeat(2,1fr); min-height:auto; }
+  .ptf-panel { min-height:280px; padding:40px 32px; }
+  .ptf-panel-ltr { font-size:clamp(100px,25vw,180px); }
+
   .poles-hd { padding:var(--pad-y) var(--pad-x) 32px; }
   .poles-grid { grid-template-columns:1fr 1fr; }
   .poles-grid .pole:last-child:nth-child(odd) { grid-column:1/-1; }
@@ -908,6 +1063,9 @@ body.menu-open { overflow:hidden; }
   .h-title { font-size:clamp(52px,14vw,80px); }
   .h-sub   { font-size:clamp(18px,6vw,28px); }
 
+  .ptf-panels { grid-template-columns:1fr 1fr; }
+  .ptf-panel { min-height:220px; padding:32px 24px; }
+
   .poles-grid { grid-template-columns:1fr; }
   .pole { padding:44px 24px; }
 
@@ -952,13 +1110,14 @@ body.menu-open { overflow:hidden; }
   <div class="sb-dots" aria-label="Sections">
     <button class="sb-dot on" data-tip="Accueil"    data-sec="hero"       aria-label="Aller à l'accueil"></button>
     <button class="sb-dot"    data-tip="ADN"         data-sec="about"      aria-label="Aller à la section ADN"></button>
-    <button class="sb-dot"    data-tip="Pôles"       data-sec="poles"      aria-label="Aller aux pôles"></button>
+    <button class="sb-dot"    data-tip="Équipe"      data-sec="team"       aria-label="Aller à l'équipe"></button>
     <button class="sb-dot"    data-tip="Process"     data-sec="process"    aria-label="Aller au process"></button>
     <button class="sb-dot"    data-tip="Services"    data-sec="services"   aria-label="Aller aux services"></button>
+    <button class="sb-dot"    data-tip="Portfolio"   data-sec="portfolio"  aria-label="Aller au portfolio"></button>
     <button class="sb-dot"    data-tip="Différence"  data-sec="difference" aria-label="Aller à la différence"></button>
     <button class="sb-dot"    data-tip="Contact"     data-sec="contact"    aria-label="Aller au contact"></button>
   </div>
-  <div class="sb-pg" aria-hidden="true"><b id="pg-curr">01</b> / 07</div>
+  <div class="sb-pg" aria-hidden="true"><b id="pg-curr">01</b> / 08</div>
 </nav>
 
 <!-- Progress bar -->
@@ -979,9 +1138,10 @@ body.menu-open { overflow:hidden; }
 <nav id="mob-menu" aria-label="Menu mobile" aria-hidden="true">
   <a href="#hero"       class="mob-nav-link">Accueil<span></span></a>
   <a href="#about"      class="mob-nav-link">Notre ADN<span></span></a>
-  <a href="#poles"      class="mob-nav-link">Les Pôles<span></span></a>
+  <a href="#team"       class="mob-nav-link">L'Équipe<span></span></a>
   <a href="#process"    class="mob-nav-link">Le Process<span></span></a>
   <a href="#services"   class="mob-nav-link">Services<span></span></a>
+  <a href="#portfolio"  class="mob-nav-link">Portfolio<span></span></a>
   <a href="#difference" class="mob-nav-link">Différence<span></span></a>
   <a href="#contact"    class="mob-nav-link">Contact<span></span></a>
   <a href="#contact"    class="mob-menu-cta">Démarrer un projet</a>
@@ -999,18 +1159,18 @@ body.menu-open { overflow:hidden; }
   </div>
   <div class="h-right">
     <span class="h-corner" aria-hidden="true">Think · Render · Transform</span>
-    <p class="h-eye rv">Agence Hybride Premium</p>
+    <p class="h-eye rv">Studio Créatif Hybride</p>
     <h1 class="h-title rv d1">
-      L'<span class="g">AGENCE</span><br>
-      <span class="o">HYBRIDE</span><br>
-      PREMIUM.
+      <span class="g">THINK.</span><br>
+      <span class="o">RENDER.</span><br>
+      TRANSFORM.
     </h1>
     <p class="h-sub rv d2">Design · Vidéo · Tech</p>
     <div class="h-sep rv d2" aria-hidden="true"></div>
     <p class="h-desc rv d3">
-      Contrairement aux agences classiques, <strong>TRT ne sous-traite pas</strong>.
-      De l'idée à la mise en ligne — créativité, production visuelle et technologie
-      fusionnées en une seule chaîne de valeur.
+      TRT Factory réunit un <strong>graphiste</strong>, un <strong>vidéaste</strong>
+      et un <strong>développeur</strong> dans un seul studio créatif.
+      De l'identité à la mise en ligne — une vision, zéro sous-traitance.
     </p>
     <div class="h-cta rv d4">
       <a href="#process" class="btn-main">
@@ -1084,6 +1244,90 @@ body.menu-open { overflow:hidden; }
         <span class="a-tri-meta">Web · Apps · UX/UI · Digital</span>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═══ TEAM ═══ -->
+<section id="team" aria-label="L'équipe TRT">
+  <div class="team-hd">
+    <div class="sec-lbl rv">Les créateurs</div>
+    <h2 class="sec-title rv d1">Trois <span class="g">esprits.</span><br><span class="o">Un studio.</span></h2>
+  </div>
+  <div class="team-grid">
+    <!-- Membre 01 — Creative Director -->
+    <article class="tm-card rv">
+      <div class="tm-visual">
+        <span class="tm-visual-ltr" aria-hidden="true">G</span>
+        <div class="tm-visual-ico" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <circle cx="30" cy="30" r="20" stroke="#C9A84C" stroke-width="1"/>
+            <path d="M22 30h16M30 22v16" stroke="#C9A84C" stroke-width="1.2"/>
+            <rect x="12" y="12" width="10" height="10" stroke="#C9A84C" stroke-width="1" fill="none" opacity=".4"/>
+            <rect x="38" y="38" width="10" height="10" stroke="#C9A84C" stroke-width="1" fill="none" opacity=".4"/>
+          </svg>
+        </div>
+      </div>
+      <div class="tm-num">PÔLE 01</div>
+      <div class="tm-role">Creative Director</div>
+      <h3 class="tm-title">Graphiste &<br>Directeur Artistique</h3>
+      <div class="tm-sep" aria-hidden="true"></div>
+      <p class="tm-bio">Identité visuelle, direction artistique et stratégie de marque. Il transforme chaque concept en un univers graphique cohérent, mémorable et percutant.</p>
+      <ul class="tm-skills">
+        <li class="tm-skill">Branding</li>
+        <li class="tm-skill">UI Design</li>
+        <li class="tm-skill">Print</li>
+        <li class="tm-skill">Social</li>
+      </ul>
+    </article>
+    <!-- Membre 02 — Visual Director -->
+    <article class="tm-card rv d1">
+      <div class="tm-visual">
+        <span class="tm-visual-ltr" aria-hidden="true">V</span>
+        <div class="tm-visual-ico" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <rect x="8" y="18" width="30" height="24" rx="2" stroke="#E8C96A" stroke-width="1"/>
+            <path d="M38 26L52 20V40L38 34V26Z" stroke="#E8C96A" stroke-width="1"/>
+            <circle cx="23" cy="30" r="6" stroke="#E8C96A" stroke-width="1" opacity=".5"/>
+          </svg>
+        </div>
+      </div>
+      <div class="tm-num">PÔLE 02</div>
+      <div class="tm-role">Visual Director</div>
+      <h3 class="tm-title">Vidéaste &<br>Directeur Photo</h3>
+      <div class="tm-sep" aria-hidden="true"></div>
+      <p class="tm-bio">Vidéo cinématique, photo professionnelle et storytelling visuel. Il capture l'essence d'une marque et la traduit en images qui marquent durablement.</p>
+      <ul class="tm-skills">
+        <li class="tm-skill">Vidéo</li>
+        <li class="tm-skill">Photo</li>
+        <li class="tm-skill">Motion</li>
+        <li class="tm-skill">Reels</li>
+      </ul>
+    </article>
+    <!-- Membre 03 — Technical Director -->
+    <article class="tm-card rv d2">
+      <div class="tm-visual">
+        <span class="tm-visual-ltr" aria-hidden="true">D</span>
+        <div class="tm-visual-ico" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <rect x="6" y="12" width="48" height="30" rx="2" stroke="#C4B28A" stroke-width="1"/>
+            <path d="M20 28l-6 4 6 4M40 28l6 4-6 4" stroke="#C4B28A" stroke-width="1.2"/>
+            <line x1="28" y1="36" x2="32" y2="20" stroke="#C4B28A" stroke-width="1" opacity=".6"/>
+            <path d="M22 46h16" stroke="#C4B28A" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+      <div class="tm-num">PÔLE 03</div>
+      <div class="tm-role">Technical Director</div>
+      <h3 class="tm-title">Dev Full‑Stack &<br>UX/UI Designer</h3>
+      <div class="tm-sep" aria-hidden="true"></div>
+      <p class="tm-bio">Développement web, applications et expériences digitales sur mesure. Il donne vie aux maquettes et garantit une expérience utilisateur irréprochable.</p>
+      <ul class="tm-skills">
+        <li class="tm-skill">React</li>
+        <li class="tm-skill">UX/UI</li>
+        <li class="tm-skill">API</li>
+        <li class="tm-skill">SEO</li>
+      </ul>
+    </article>
   </div>
 </section>
 
@@ -1223,15 +1467,15 @@ body.menu-open { overflow:hidden; }
 <!-- ═══ SERVICES ═══ -->
 <section id="services" aria-label="Nos services">
   <div class="svc-hd">
-    <div class="sec-lbl rv">Ce Qu'on Fait</div>
-    <h2 class="sec-title rv d1">Nos <span class="g">Services</span></h2>
+    <div class="sec-lbl rv">Ce Qu'on Construit</div>
+    <h2 class="sec-title rv d1">Ce qu'on <span class="g">construit.</span></h2>
   </div>
   <div class="svc-list" role="list">
     <a href="#contact" class="svc rv" role="listitem">
       <div class="svc-num" aria-hidden="true">01</div>
       <div class="svc-info">
-        <div class="svc-name">Identité & Branding</div>
-        <div class="svc-sub">Logos · Chartes · Naming · Positionnement</div>
+        <div class="svc-name">Identités de Marque</div>
+        <div class="svc-sub">Nous concevons des univers visuels cohérents et mémorables.</div>
       </div>
       <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
     </a>
@@ -1239,26 +1483,68 @@ body.menu-open { overflow:hidden; }
       <div class="svc-num" aria-hidden="true">02</div>
       <div class="svc-info">
         <div class="svc-name">Production Visuelle</div>
-        <div class="svc-sub">Vidéo · Photo · Reels · Motion</div>
+        <div class="svc-sub">Nous produisons du contenu qui attire et retient l'attention.</div>
       </div>
       <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
     </a>
     <a href="#contact" class="svc rv d2" role="listitem">
       <div class="svc-num" aria-hidden="true">03</div>
       <div class="svc-info">
-        <div class="svc-name">Web & Digital</div>
-        <div class="svc-sub">Sites · Applications · UX/UI · E-commerce</div>
+        <div class="svc-name">Expériences Digitales</div>
+        <div class="svc-sub">Nous développons des plateformes modernes pensées pour l'utilisateur.</div>
       </div>
       <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
     </a>
     <a href="#contact" class="svc rv d3" role="listitem">
       <div class="svc-num" aria-hidden="true">04</div>
       <div class="svc-info">
-        <div class="svc-name">Stratégie & Impact</div>
-        <div class="svc-sub">Social Media · Campagnes · Analytics</div>
+        <div class="svc-name">Stratégie & Diffusion</div>
+        <div class="svc-sub">Nous amplifions votre présence pour générer un impact mesurable.</div>
       </div>
       <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
     </a>
+  </div>
+</section>
+
+<!-- ═══ PORTFOLIO ═══ -->
+<section id="portfolio" aria-label="Nos capacités">
+  <div class="ptf-hd">
+    <div class="sec-lbl rv">Ce qu'on maîtrise</div>
+    <h2 class="sec-title rv d1">Nos <span class="g">capacités.</span></h2>
+  </div>
+  <div class="ptf-panels">
+    <div class="ptf-panel rv">
+      <span class="ptf-panel-ltr" aria-hidden="true">B</span>
+      <div class="ptf-cnt">
+        <div class="ptf-type">Identité de marque</div>
+        <div class="ptf-title">Branding &<br>Design</div>
+        <div class="ptf-desc">Logos, chartes, direction artistique et univers visuels complets.</div>
+      </div>
+    </div>
+    <div class="ptf-panel rv d1">
+      <span class="ptf-panel-ltr" aria-hidden="true">V</span>
+      <div class="ptf-cnt">
+        <div class="ptf-type">Production cinématique</div>
+        <div class="ptf-title">Vidéo &<br>Photo</div>
+        <div class="ptf-desc">Films de marque, reels, shooting photo et motion design.</div>
+      </div>
+    </div>
+    <div class="ptf-panel rv d2">
+      <span class="ptf-panel-ltr" aria-hidden="true">W</span>
+      <div class="ptf-cnt">
+        <div class="ptf-type">Expérience digitale</div>
+        <div class="ptf-title">Web &<br>UX/UI</div>
+        <div class="ptf-desc">Sites performants, applications et interfaces pensées pour l'utilisateur.</div>
+      </div>
+    </div>
+    <div class="ptf-panel rv d3">
+      <span class="ptf-panel-ltr" aria-hidden="true">S</span>
+      <div class="ptf-cnt">
+        <div class="ptf-type">Amplification</div>
+        <div class="ptf-title">Stratégie &<br>Social</div>
+        <div class="ptf-desc">Campagnes, community management et stratégie d'impact digital.</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1410,7 +1696,7 @@ if(isFinePt){
     curR.style.cssText=`left:${rx}px;top:${ry}px`;
     requestAnimationFrame(loop);
   })();
-  $$('a,button,.pole,.svc,.step,.soc-btn').forEach(el=>{
+  $$('a,button,.pole,.svc,.step,.soc-btn,.tm-card,.ptf-panel').forEach(el=>{
     el.addEventListener('mouseenter',()=>document.body.classList.add('cur-lg'));
     el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-lg'));
   });
@@ -1437,7 +1723,7 @@ mobLinks.forEach(l => l.addEventListener('click', closeMenu));
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeMenu(); });
 
 /* ─── SCROLL → PROGRESS + SIDEBAR DOTS + PAGE # ─── */
-const SECTIONS = ['hero','about','poles','process','services','difference','contact'];
+const SECTIONS = ['hero','about','team','process','services','portfolio','difference','contact'];
 const dots   = $$('.sb-dot');
 const pgCurr = $('pg-curr');
 const progF  = $('prog-f');
