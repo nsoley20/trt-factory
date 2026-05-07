@@ -325,6 +325,20 @@ section[id], div[id] { scroll-margin-top:0; }
   0%,100% { filter:drop-shadow(0 0 40px rgba(201,168,76,.1)); }
   50%      { filter:drop-shadow(0 0 100px rgba(201,168,76,.25)); }
 }
+/* Animated glow orb behind the logo */
+.h-left::before {
+  content:''; position:absolute;
+  width:75%; padding-bottom:75%; border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.09) 0%,transparent 68%);
+  top:50%; left:50%;
+  transform:translate(-60%,-55%) scale(0.9);
+  animation:orbFloat 11s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes orbFloat {
+  0%   { transform:translate(-60%,-55%) scale(0.9); opacity:.7; }
+  100% { transform:translate(-40%,-45%) scale(1.25); opacity:1; }
+}
 .h-right {
   display:flex; flex-direction:column; justify-content:flex-end;
   padding:var(--pad-y) var(--pad-x) var(--pad-y) 52px;
@@ -394,7 +408,8 @@ section[id], div[id] { scroll-margin-top:0; }
 .t-sep { opacity:.3; }
 @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 @media(prefers-reduced-motion:reduce) {
-  .t-inner, .h-logo-giant img, .h-scroll-line::after { animation:none; }
+  .t-inner, .h-logo-giant img, .h-scroll-line::after,
+  .h-left::before { animation:none; }
 }
 
 /* ═══════════════════════════════════════════
@@ -483,64 +498,6 @@ section[id], div[id] { scroll-margin-top:0; }
 .a-tri-item:hover .a-tri-meta { opacity:1; transform:translateY(0); }
 
 /* ═══════════════════════════════════════════
-   POLES
-═══════════════════════════════════════════ */
-#poles { background:var(--black); }
-.poles-hd { padding:var(--pad-y) var(--pad-x) 36px; }
-.poles-grid {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:1px; background:rgba(201,168,76,.05);
-}
-.pole {
-  background:var(--black); padding:56px 44px;
-  position:relative; overflow:hidden;
-  transition:background .5s;
-}
-.pole:nth-child(1):hover { background:rgba(201,168,76,.03); }
-.pole:nth-child(2):hover { background:rgba(232,201,106,.022); }
-.pole:nth-child(3):hover { background:rgba(196,178,138,.022); }
-.pole-bg-n {
-  position:absolute; bottom:-24px; right:-8px;
-  font-family:'Bebas Neue',sans-serif; font-size:240px; line-height:1;
-  color:rgba(255,255,255,.018); pointer-events:none; user-select:none;
-  transition:color .6s, transform .6s;
-}
-.pole:hover .pole-bg-n { color:rgba(201,168,76,.06); transform:translateX(-8px) scale(1.04); }
-.pole::after {
-  content:''; position:absolute; left:0; top:0;
-  width:2px; height:100%;
-  transform:scaleY(0); transform-origin:top;
-  transition:transform .5s cubic-bezier(.16,1,.3,1);
-}
-.pole:nth-child(1)::after { background:var(--gold); }
-.pole:nth-child(2)::after { background:var(--gold-light); }
-.pole:nth-child(3)::after { background:var(--gold-cold); }
-.pole:hover::after { transform:scaleY(1); }
-.pole-idx {
-  font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.4em;
-  color:var(--text-dim); margin-bottom:32px; display:block;
-}
-.pole-icon { margin-bottom:24px; }
-.pole-name {
-  font-family:'Bebas Neue',sans-serif; font-size:32px;
-  letter-spacing:.04em; line-height:1; margin-bottom:16px;
-}
-.pole-name-sub {
-  display:block; font-family:'Syncopate',sans-serif;
-  font-size:8px; font-weight:400; letter-spacing:.2em;
-  color:var(--text-dim); text-transform:uppercase; margin-bottom:10px;
-}
-.pole-desc { font-size:13px; line-height:1.85; color:var(--text-dim); margin-bottom:24px; }
-.pole-tags { display:flex; flex-wrap:wrap; gap:8px; }
-.pole-tag {
-  font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.15em;
-  padding:5px 11px; border:1px solid rgba(201,168,76,.22);
-  text-transform:uppercase; color:var(--gold);
-  transition:background .3s, border-color .3s;
-}
-.pole:hover .pole-tag { background:rgba(201,168,76,.06); border-color:rgba(201,168,76,.4); }
-
-/* ═══════════════════════════════════════════
    TEAM
 ═══════════════════════════════════════════ */
 #team { background:var(--grey); }
@@ -550,10 +507,11 @@ section[id], div[id] { scroll-margin-top:0; }
   gap:1px; background:rgba(201,168,76,.05);
 }
 .tm-card {
-  background:var(--grey); padding:56px 44px;
+  background:var(--grey); padding:64px 44px 56px;
   position:relative; overflow:hidden;
   transition:background .5s;
   display:flex; flex-direction:column;
+  min-height:420px;
 }
 .tm-card:nth-child(1):hover { background:rgba(201,168,76,.05); }
 .tm-card:nth-child(2):hover { background:rgba(232,201,106,.04); }
@@ -568,32 +526,23 @@ section[id], div[id] { scroll-margin-top:0; }
 .tm-card:nth-child(2)::after { background:var(--gold-light); }
 .tm-card:nth-child(3)::after { background:var(--gold-cold); }
 .tm-card:hover::after { transform:scaleY(1); }
-.tm-visual {
-  height:160px; margin-bottom:36px;
-  display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(201,168,76,.07);
-  position:relative; overflow:hidden;
-  background:var(--black);
-}
-.tm-visual-ltr {
+/* Full-card background initial — T / R / T */
+.tm-bg-ltr {
+  position:absolute;
   font-family:'Bebas Neue',sans-serif;
-  font-size:140px; line-height:1;
-  color:transparent; position:absolute;
-  bottom:-20px; right:8px;
+  font-size:clamp(260px,26vw,420px); line-height:1;
+  color:transparent;
+  top:-40px; right:-24px;
   pointer-events:none; user-select:none;
-  transition:-webkit-text-stroke-color .4s;
+  transition:-webkit-text-stroke-color .5s, transform .7s cubic-bezier(.16,1,.3,1);
+  transform-origin:top right;
 }
-.tm-card:nth-child(1) .tm-visual-ltr { -webkit-text-stroke:1px rgba(201,168,76,.08); }
-.tm-card:nth-child(2) .tm-visual-ltr { -webkit-text-stroke:1px rgba(232,201,106,.07); }
-.tm-card:nth-child(3) .tm-visual-ltr { -webkit-text-stroke:1px rgba(196,178,138,.07); }
-.tm-card:nth-child(1):hover .tm-visual-ltr { -webkit-text-stroke-color:rgba(201,168,76,.2); }
-.tm-card:nth-child(2):hover .tm-visual-ltr { -webkit-text-stroke-color:rgba(232,201,106,.17); }
-.tm-card:nth-child(3):hover .tm-visual-ltr { -webkit-text-stroke-color:rgba(196,178,138,.17); }
-.tm-visual-ico {
-  position:relative; z-index:1;
-  opacity:.45; transition:opacity .4s, transform .4s;
-}
-.tm-card:hover .tm-visual-ico { opacity:.9; transform:scale(1.05); }
+.tm-card:nth-child(1) .tm-bg-ltr { -webkit-text-stroke:1px rgba(201,168,76,.06); }
+.tm-card:nth-child(2) .tm-bg-ltr { -webkit-text-stroke:1px rgba(232,201,106,.055); }
+.tm-card:nth-child(3) .tm-bg-ltr { -webkit-text-stroke:1px rgba(196,178,138,.055); }
+.tm-card:nth-child(1):hover .tm-bg-ltr { -webkit-text-stroke-color:rgba(201,168,76,.26); transform:scale(1.06) rotate(-4deg); }
+.tm-card:nth-child(2):hover .tm-bg-ltr { -webkit-text-stroke-color:rgba(232,201,106,.23); transform:scale(1.06) rotate(-4deg); }
+.tm-card:nth-child(3):hover .tm-bg-ltr { -webkit-text-stroke-color:rgba(196,178,138,.23); transform:scale(1.06) rotate(-4deg); }
 .tm-num {
   font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.4em;
   color:var(--text-dim); margin-bottom:16px;
@@ -1011,16 +960,10 @@ body.menu-open { overflow:hidden; }
   .a-left  { border-right:none; border-bottom:1px solid rgba(201,168,76,.07); }
 
   .team-grid { grid-template-columns:1fr; }
-  .tm-visual { height:120px; }
-  .tm-visual-ltr { font-size:100px; }
 
   .ptf-panels { grid-template-columns:repeat(2,1fr); min-height:auto; }
   .ptf-panel { min-height:280px; padding:40px 32px; }
   .ptf-panel-ltr { font-size:clamp(100px,25vw,180px); }
-
-  .poles-hd { padding:var(--pad-y) var(--pad-x) 32px; }
-  .poles-grid { grid-template-columns:1fr 1fr; }
-  .poles-grid .pole:last-child:nth-child(odd) { grid-column:1/-1; }
 
   #process { padding:var(--pad-y) var(--pad-x); }
   .proc-tl { padding-left:28px; }
@@ -1065,9 +1008,6 @@ body.menu-open { overflow:hidden; }
 
   .ptf-panels { grid-template-columns:1fr 1fr; }
   .ptf-panel { min-height:220px; padding:32px 24px; }
-
-  .poles-grid { grid-template-columns:1fr; }
-  .pole { padding:44px 24px; }
 
   .step { grid-template-columns:60px 1fr; gap:16px; }
   .step-n { font-size:36px; }
@@ -1161,9 +1101,9 @@ body.menu-open { overflow:hidden; }
     <span class="h-corner" aria-hidden="true">Think · Render · Transform</span>
     <p class="h-eye rv">Studio Créatif Hybride</p>
     <h1 class="h-title rv d1">
-      <span class="g">THINK.</span><br>
-      <span class="o">RENDER.</span><br>
-      TRANSFORM.
+      <span class="g sc">THINK.</span><br>
+      <span class="o sc">RENDER.</span><br>
+      <span class="sc">TRANSFORM.</span>
     </h1>
     <p class="h-sub rv d2">Design · Vidéo · Tech</p>
     <div class="h-sep rv d2" aria-hidden="true"></div>
@@ -1256,18 +1196,8 @@ body.menu-open { overflow:hidden; }
   <div class="team-grid">
     <!-- Membre 01 — Creative Director -->
     <article class="tm-card rv">
-      <div class="tm-visual">
-        <span class="tm-visual-ltr" aria-hidden="true">G</span>
-        <div class="tm-visual-ico" aria-hidden="true">
-          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
-            <circle cx="30" cy="30" r="20" stroke="#C9A84C" stroke-width="1"/>
-            <path d="M22 30h16M30 22v16" stroke="#C9A84C" stroke-width="1.2"/>
-            <rect x="12" y="12" width="10" height="10" stroke="#C9A84C" stroke-width="1" fill="none" opacity=".4"/>
-            <rect x="38" y="38" width="10" height="10" stroke="#C9A84C" stroke-width="1" fill="none" opacity=".4"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tm-num">PÔLE 01</div>
+      <span class="tm-bg-ltr" aria-hidden="true">T</span>
+      <div class="tm-num">01 · THINK</div>
       <div class="tm-role">Creative Director</div>
       <h3 class="tm-title">Graphiste &<br>Directeur Artistique</h3>
       <div class="tm-sep" aria-hidden="true"></div>
@@ -1281,17 +1211,8 @@ body.menu-open { overflow:hidden; }
     </article>
     <!-- Membre 02 — Visual Director -->
     <article class="tm-card rv d1">
-      <div class="tm-visual">
-        <span class="tm-visual-ltr" aria-hidden="true">V</span>
-        <div class="tm-visual-ico" aria-hidden="true">
-          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
-            <rect x="8" y="18" width="30" height="24" rx="2" stroke="#E8C96A" stroke-width="1"/>
-            <path d="M38 26L52 20V40L38 34V26Z" stroke="#E8C96A" stroke-width="1"/>
-            <circle cx="23" cy="30" r="6" stroke="#E8C96A" stroke-width="1" opacity=".5"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tm-num">PÔLE 02</div>
+      <span class="tm-bg-ltr" aria-hidden="true">R</span>
+      <div class="tm-num">02 · RENDER</div>
       <div class="tm-role">Visual Director</div>
       <h3 class="tm-title">Vidéaste &<br>Directeur Photo</h3>
       <div class="tm-sep" aria-hidden="true"></div>
@@ -1305,18 +1226,8 @@ body.menu-open { overflow:hidden; }
     </article>
     <!-- Membre 03 — Technical Director -->
     <article class="tm-card rv d2">
-      <div class="tm-visual">
-        <span class="tm-visual-ltr" aria-hidden="true">D</span>
-        <div class="tm-visual-ico" aria-hidden="true">
-          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
-            <rect x="6" y="12" width="48" height="30" rx="2" stroke="#C4B28A" stroke-width="1"/>
-            <path d="M20 28l-6 4 6 4M40 28l6 4-6 4" stroke="#C4B28A" stroke-width="1.2"/>
-            <line x1="28" y1="36" x2="32" y2="20" stroke="#C4B28A" stroke-width="1" opacity=".6"/>
-            <path d="M22 46h16" stroke="#C4B28A" stroke-width="1.5"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tm-num">PÔLE 03</div>
+      <span class="tm-bg-ltr" aria-hidden="true">T</span>
+      <div class="tm-num">03 · TRANSFORM</div>
       <div class="tm-role">Technical Director</div>
       <h3 class="tm-title">Dev Full‑Stack &<br>UX/UI Designer</h3>
       <div class="tm-sep" aria-hidden="true"></div>
@@ -1326,81 +1237,6 @@ body.menu-open { overflow:hidden; }
         <li class="tm-skill">UX/UI</li>
         <li class="tm-skill">API</li>
         <li class="tm-skill">SEO</li>
-      </ul>
-    </article>
-  </div>
-</section>
-
-<!-- ═══ PÔLES ═══ -->
-<section id="poles" aria-label="Les 3 pôles TRT">
-  <div class="poles-hd">
-    <div class="sec-lbl rv">Notre Structure</div>
-    <h2 class="sec-title rv d1">Les 3 Pôles <span class="g">TRT</span></h2>
-  </div>
-  <div class="poles-grid">
-    <article class="pole rv">
-      <span class="pole-bg-n" aria-hidden="true">01</span>
-      <span class="pole-idx">PÔLE · 01</span>
-      <div class="pole-icon" aria-hidden="true">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-          <rect x="6" y="6" width="32" height="32" stroke="#C9A84C" stroke-width="1.2" fill="none"/>
-          <path d="M14 30L20 18L26 26L30 20L34 30" stroke="#C9A84C" stroke-width="1.2" fill="none"/>
-          <circle cx="18" cy="18" r="3" stroke="#C9A84C" stroke-width="1.2" fill="none"/>
-        </svg>
-      </div>
-      <h3 class="pole-name" style="color:var(--gold)">
-        <span class="pole-name-sub">Design &</span>Marketing
-      </h3>
-      <p class="pole-desc">Identité visuelle, branding stratégique, direction artistique et contenu créatif. Chaque pixel a un sens, chaque couleur raconte une histoire.</p>
-      <ul class="pole-tags" aria-label="Compétences">
-        <li class="pole-tag">Branding</li>
-        <li class="pole-tag">UI Design</li>
-        <li class="pole-tag">Motion</li>
-        <li class="pole-tag">Social</li>
-      </ul>
-    </article>
-    <article class="pole rv d2">
-      <span class="pole-bg-n" aria-hidden="true">02</span>
-      <span class="pole-idx">PÔLE · 02</span>
-      <div class="pole-icon" aria-hidden="true">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-          <rect x="3" y="11" width="26" height="22" rx="2" stroke="#E8C96A" stroke-width="1.2" fill="none"/>
-          <path d="M29 19L41 13V31L29 25V19Z" stroke="#E8C96A" stroke-width="1.2" fill="none"/>
-          <circle cx="16" cy="22" r="5" stroke="#E8C96A" stroke-width="1" fill="none" opacity=".5"/>
-        </svg>
-      </div>
-      <h3 class="pole-name" style="color:var(--gold-light)">
-        <span class="pole-name-sub">Production</span>Visuelle
-      </h3>
-      <p class="pole-desc">Vidéo cinématique, photographie professionnelle, reels dynamiques et storytelling visuel. L'image au service de votre message.</p>
-      <ul class="pole-tags" aria-label="Compétences">
-        <li class="pole-tag" style="color:var(--gold-light);border-color:rgba(232,201,106,.22)">Cinéma</li>
-        <li class="pole-tag" style="color:var(--gold-light);border-color:rgba(232,201,106,.22)">Photo</li>
-        <li class="pole-tag" style="color:var(--gold-light);border-color:rgba(232,201,106,.22)">Reels</li>
-        <li class="pole-tag" style="color:var(--gold-light);border-color:rgba(232,201,106,.22)">Backstage</li>
-      </ul>
-    </article>
-    <article class="pole rv d3">
-      <span class="pole-bg-n" aria-hidden="true">03</span>
-      <span class="pole-idx">PÔLE · 03</span>
-      <div class="pole-icon" aria-hidden="true">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-          <rect x="4" y="9" width="36" height="22" rx="2" stroke="#C4B28A" stroke-width="1.2" fill="none"/>
-          <path d="M18 36H26" stroke="#C4B28A" stroke-width="1.5"/>
-          <path d="M14 21L18 17L14 13" stroke="#C4B28A" stroke-width="1.2"/>
-          <path d="M30 21L26 17L30 13" stroke="#C4B28A" stroke-width="1.2"/>
-          <line x1="21" y1="24" x2="24" y2="13" stroke="#C4B28A" stroke-width="1" opacity=".6"/>
-        </svg>
-      </div>
-      <h3 class="pole-name" style="color:var(--gold-cold)">
-        <span class="pole-name-sub">Tech &</span>Expérience
-      </h3>
-      <p class="pole-desc">Développement web, applications, UI/UX et déploiement digital. La technologie comme levier de croissance et d'expérience utilisateur.</p>
-      <ul class="pole-tags" aria-label="Compétences">
-        <li class="pole-tag" style="color:var(--gold-cold);border-color:rgba(196,178,138,.22)">Web App</li>
-        <li class="pole-tag" style="color:var(--gold-cold);border-color:rgba(196,178,138,.22)">UX/UI</li>
-        <li class="pole-tag" style="color:var(--gold-cold);border-color:rgba(196,178,138,.22)">SEO</li>
-        <li class="pole-tag" style="color:var(--gold-cold);border-color:rgba(196,178,138,.22)">E-com</li>
       </ul>
     </article>
   </div>
@@ -1696,7 +1532,7 @@ if(isFinePt){
     curR.style.cssText=`left:${rx}px;top:${ry}px`;
     requestAnimationFrame(loop);
   })();
-  $$('a,button,.pole,.svc,.step,.soc-btn,.tm-card,.ptf-panel').forEach(el=>{
+  $$('a,button,.svc,.step,.soc-btn,.tm-card,.ptf-panel').forEach(el=>{
     el.addEventListener('mouseenter',()=>document.body.classList.add('cur-lg'));
     el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-lg'));
   });
@@ -1785,6 +1621,26 @@ const cObs = new IntersectionObserver(entries=>{
   });
 },{threshold:.4});
 statNums.forEach(el=>cObs.observe(el));
+
+/* ─── HERO TITLE SCRAMBLE ─── */
+(function(){
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ·.';
+  function scrambleEl(el, delay){
+    const target = el.textContent;
+    let iter = 0;
+    setTimeout(()=>{
+      const iv = setInterval(()=>{
+        el.textContent = target.split('').map((c,i)=>{
+          if(i < iter) return c;
+          return CHARS[Math.floor(Math.random()*CHARS.length)];
+        }).join('');
+        iter += 0.45;
+        if(iter >= target.length){ el.textContent = target; clearInterval(iv); }
+      }, 28);
+    }, delay);
+  }
+  $$('.h-title .sc').forEach((el,i)=>scrambleEl(el, 380 + i*220));
+})();
 
 /* ─── FORM SUBMIT ─── */
 const form = $('contact-form');
