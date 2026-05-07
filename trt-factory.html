@@ -1172,10 +1172,11 @@ body.menu-open { overflow:hidden; }
   .a-left  { border-right:none; border-bottom:1px solid rgba(201,168,76,.07); }
 
   .team-grid { grid-template-columns:1fr; }
+  .tm-card { min-height:360px; }
 
   .ptf-panels { grid-template-columns:repeat(2,1fr); min-height:auto; }
-  .ptf-panel { min-height:280px; padding:40px 32px; }
-  .ptf-panel-ltr { font-size:clamp(100px,25vw,180px); }
+  .ptf-panel { min-height:260px; padding:40px 32px; }
+  .ptf-panel-ltr { font-size:clamp(100px,22vw,170px); }
 
   #process { padding:var(--pad-y) var(--pad-x); }
   .proc-tl { padding-left:28px; }
@@ -1187,10 +1188,12 @@ body.menu-open { overflow:hidden; }
 
   #services { padding:var(--pad-y) var(--pad-x); }
   .pkg-grid { grid-template-columns:1fr; }
+  .pkg-card { padding:36px 32px 32px; }
   .pkg-card.featured { background:var(--grey); }
-  .svc-row { grid-template-columns:36px 1fr auto 40px; gap:16px; }
+  .svc-row { grid-template-columns:36px 1fr 40px; gap:16px; }
+  .svc-row-price { display:none; }
   #devis-fab { bottom:20px; right:20px; }
-  .qm-panel { width:100vw; }
+  .qm-panel { width:min(520px,100vw); }
 
   #difference { grid-template-columns:1fr; }
   .diff-right { min-height:340px; padding:48px; border-top:1px solid rgba(201,168,76,.07); }
@@ -1211,47 +1214,79 @@ body.menu-open { overflow:hidden; }
    BREAKPOINT: MOBILE < 600px
 ═══════════════════════════════════════════ */
 @media(max-width:599px) {
-  :root { --pad-x:24px; --pad-y:64px; }
+  :root { --pad-x:20px; --pad-y:56px; }
 
   #mob-hd { padding:0 16px; }
 
-  .h-left { min-height:35vh; padding:40px 24px; }
-  .h-logo-giant img { width:clamp(120px,44vw,220px); height:clamp(120px,44vw,220px); }
+  /* Hero */
+  .h-left { min-height:34vh; padding:32px 20px; }
+  .h-logo-giant img { width:clamp(110px,38vw,180px); height:clamp(110px,38vw,180px); }
+  .h-right { padding:32px var(--pad-x) 48px; }
+  .h-title { font-size:clamp(48px,13vw,76px); }
+  .h-sub   { font-size:clamp(16px,5.5vw,26px); }
+  .h-desc  { font-size:13px; margin-bottom:36px; }
 
-  .h-title { font-size:clamp(52px,14vw,80px); }
-  .h-sub   { font-size:clamp(18px,6vw,28px); }
+  /* About */
+  .a-tri-item { padding:18px 20px; min-height:88px; }
+  .a-tri-disc { font-size:clamp(28px,7.5vw,44px); }
 
+  /* Team */
+  .tm-card { padding:40px 20px 32px; min-height:320px; }
+  .tm-title { font-size:clamp(20px,5.5vw,30px); }
+
+  /* Portfolio */
   .ptf-panels { grid-template-columns:1fr 1fr; }
-  .ptf-panel { min-height:220px; padding:32px 24px; }
+  .ptf-panel { min-height:190px; padding:28px 18px; }
+  .ptf-panel-ltr { font-size:clamp(80px,20vw,140px); }
 
-  .step { grid-template-columns:60px 1fr; gap:16px; }
-  .step-n { font-size:36px; }
-  .proc-tl { padding-left:20px; }
-  .step::before { left:-28px; }
+  /* Process */
+  .step { grid-template-columns:52px 1fr; gap:14px; }
+  .step-n { font-size:34px; }
+  .proc-tl { padding-left:18px; }
+  .step::before { left:-24px; top:44px; }
 
-  #stats { grid-template-columns:1fr 1fr; padding:48px 24px; }
-  .stat { padding:0 12px; }
+  /* Stats */
+  #stats { grid-template-columns:1fr 1fr; padding:40px var(--pad-x); }
+  .stat { padding:0 10px; }
   .stat:first-child,.stat:nth-child(3) { padding-left:0; }
+  .stat:nth-child(2) { border-right:none; }
+  .stat:nth-child(3) { border-right:1px solid rgba(0,0,0,.12); }
 
-  .svc-tab { padding:12px 14px; letter-spacing:.18em; }
-  .svc-row { grid-template-columns:30px 1fr 36px; gap:12px; padding:16px 0; }
-  .svc-row-price { display:none; }
-  .qm-header,.qm-scroll,.qm-footer { padding-left:20px; padding-right:20px; }
+  /* Services — packages */
+  .pkg-card { padding:28px 20px 24px; }
+  .pkg-name { font-size:clamp(32px,8vw,48px); }
+  .pkg-price { font-size:clamp(28px,7vw,42px); }
+  .pkg-grid { margin-bottom:52px; }
+  .svc-intro { font-size:13px; }
+  /* Services — à la demande */
+  .svc-demande-hd { margin-bottom:20px; }
+  .svc-demande-title { font-size:clamp(26px,7vw,40px); }
+  .svc-tab { padding:11px 12px; letter-spacing:.14em; font-size:7.5px; }
+  .svc-row { grid-template-columns:28px 1fr 36px; gap:10px; padding:14px 0; }
+  .svc-row-name { font-size:clamp(17px,4.5vw,26px); }
+  .svc-row-desc { font-size:9px; letter-spacing:.1em; }
+  /* Services — modal */
+  .qm-panel { width:100vw; }
+  .qm-header,.qm-scroll,.qm-footer { padding-left:16px; padding-right:16px; }
+  .qm-title { font-size:24px; }
   .qm-f-row { grid-template-columns:1fr; }
-  #devis-fab { bottom:16px; right:16px; padding:13px 16px; font-size:7.5px; }
-  .pkg-grid { margin-bottom:64px; }
+  #devis-fab { bottom:16px; right:16px; padding:12px 16px; font-size:7.5px; }
 
+  /* Difference */
   .diff-right { display:none; }
 
+  /* Contact */
   .form-row { grid-template-columns:1fr; }
+  .con-big { font-size:clamp(40px,11vw,68px); }
+  .con-right { padding:40px var(--pad-x) 52px; }
 
-  footer { grid-template-columns:1fr; gap:12px; padding:32px 24px; }
+  /* Footer */
+  footer { grid-template-columns:1fr; gap:12px; padding:28px var(--pad-x); }
   .ft-mid,.ft-r { text-align:left; }
   .ft-r { grid-column:auto; border-top:none; }
 
-  .con-big { font-size:clamp(48px,14vw,80px); }
-
-  .mob-nav-link { font-size:clamp(32px,9vw,52px); }
+  /* Mobile nav */
+  .mob-nav-link { font-size:clamp(30px,8vw,48px); }
 }
 </style>
 </head>
