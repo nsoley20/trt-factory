@@ -111,18 +111,11 @@ body::after {
   backdrop-filter:blur(20px);
 }
 .sb-mark img {
-  width:40px; height:40px; object-fit:contain;
-  opacity:.85; transition:opacity .3s;
-  border-radius:4px;
+  width:56px; height:auto; max-height:46px; object-fit:contain;
+  opacity:.82; transition:opacity .3s;
 }
 .sb-mark:hover img { opacity:1; }
-.sb-brand {
-  writing-mode:vertical-rl; transform:rotate(180deg);
-  font-family:'Syncopate',sans-serif; font-size:8px; font-weight:700;
-  letter-spacing:.35em; color:var(--text-dim); text-transform:uppercase;
-  user-select:none;
-}
-.sb-brand em { color:var(--gold); font-style:normal; }
+.sb-brand { display:none; }
 
 .sb-dots { display:flex; flex-direction:column; gap:6px; align-items:center; }
 .sb-dot {
@@ -181,14 +174,10 @@ body::after {
   text-decoration:none;
 }
 .mob-logo img {
-  width:36px; height:36px; object-fit:contain;
-  opacity:.9; border-radius:4px;
+  width:auto; height:40px; max-width:100px; object-fit:contain;
+  opacity:.92;
 }
-.mob-logo-txt {
-  font-family:'Syncopate',sans-serif; font-size:10px; font-weight:700;
-  letter-spacing:.2em; color:var(--white);
-}
-.mob-logo-txt em { color:var(--gold); font-style:normal; }
+.mob-logo-txt { display:none; }
 
 /* Hamburger */
 #burger {
@@ -316,9 +305,9 @@ section[id], div[id] { scroll-margin-top:0; }
   pointer-events:none; user-select:none; line-height:1;
 }
 .h-logo-giant img {
-  width:clamp(180px,22vw,320px); height:clamp(180px,22vw,320px);
+  width:clamp(200px,22vw,320px); height:auto;
   object-fit:contain; display:block;
-  filter:drop-shadow(0 0 60px rgba(201,168,76,.15));
+  filter:drop-shadow(0 0 60px rgba(201,168,76,.18));
   animation:breathe 7s ease-in-out infinite;
 }
 @keyframes breathe {
@@ -1104,7 +1093,7 @@ footer {
   font-family:'Syncopate',sans-serif; font-size:11px; font-weight:700;
   letter-spacing:.22em; display:flex; align-items:center; gap:10px;
 }
-.ft-logo img { width:28px; height:28px; object-fit:contain; opacity:.85; border-radius:3px; }
+.ft-logo img { width:auto; height:28px; max-width:64px; object-fit:contain; opacity:.85; }
 .ft-logo em { color:var(--gold); font-style:normal; }
 .ft-mid { text-align:center; font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:var(--text-dim); }
 .ft-r { text-align:right; font-size:11px; color:var(--text-dim); letter-spacing:.1em; }
@@ -1218,10 +1207,11 @@ body.menu-open { overflow:hidden; }
 
   #mob-hd { padding:0 16px; }
 
-  /* Hero */
-  .h-left { min-height:34vh; padding:32px 20px; }
-  .h-logo-giant img { width:clamp(110px,38vw,180px); height:clamp(110px,38vw,180px); }
-  .h-right { padding:32px var(--pad-x) 48px; }
+  /* Hero — logo panel compact, non dominant */
+  .h-left { min-height:0; height:auto; padding:28px 20px 22px; }
+  .h-wm { display:none; }
+  .h-logo-giant img { width:clamp(130px,42vw,200px); height:auto; }
+  .h-right { padding:28px var(--pad-x) 48px; }
   .h-title { font-size:clamp(48px,13vw,76px); }
   .h-sub   { font-size:clamp(16px,5.5vw,26px); }
   .h-desc  { font-size:13px; margin-bottom:36px; }
@@ -1298,7 +1288,7 @@ body.menu-open { overflow:hidden; }
 <!-- ═══ SIDEBAR (desktop) ═══ -->
 <nav id="sb" aria-label="Navigation principale">
   <a href="#hero" class="sb-mark" aria-label="TRT Factory — accueil">
-    <img src="trt logo.jpeg" alt="TRT Factory">
+    <img src="TRT LOGO.PNG" alt="TRT Factory">
   </a>
   <div class="sb-brand" aria-hidden="true">TRT <em>FACTORY</em></div>
   <div class="sb-dots" aria-label="Sections">
@@ -1320,7 +1310,7 @@ body.menu-open { overflow:hidden; }
 <!-- ═══ MOBILE HEADER ═══ -->
 <header id="mob-hd">
   <a href="#hero" class="mob-logo" aria-label="TRT Factory — accueil">
-    <img src="trt logo.jpeg" alt="">
+    <img src="TRT LOGO.PNG" alt="">
     <span class="mob-logo-txt">TRT <em>FACTORY</em></span>
   </a>
   <button id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mob-menu">
@@ -1348,7 +1338,7 @@ body.menu-open { overflow:hidden; }
   <div class="h-left">
     <div class="h-wm" aria-hidden="true">T</div>
     <div class="h-logo-giant">
-      <img src="trt logo.jpeg" alt="TRT Factory">
+      <img src="TRT LOGO.PNG" alt="TRT Factory">
     </div>
   </div>
   <div class="h-right">
@@ -1976,7 +1966,7 @@ body.menu-open { overflow:hidden; }
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="ft-logo">
-    <img src="trt logo.jpeg" alt="TRT Factory">
+    <img src="TRT LOGO.PNG" alt="TRT Factory">
     TRT <em>FACTORY</em>
   </div>
   <div class="ft-mid">CRÉER · PRODUIRE · DIFFUSER · IMPACTER</div>
