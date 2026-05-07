@@ -111,7 +111,7 @@ body::after {
   backdrop-filter:blur(20px);
 }
 .sb-mark img {
-  width:56px; height:auto; max-height:46px; object-fit:contain;
+  width:64px; height:auto; object-fit:contain;
   opacity:.82; transition:opacity .3s;
 }
 .sb-mark:hover img { opacity:1; }
@@ -1093,7 +1093,7 @@ footer {
   font-family:'Syncopate',sans-serif; font-size:11px; font-weight:700;
   letter-spacing:.22em; display:flex; align-items:center; gap:10px;
 }
-.ft-logo img { width:auto; height:28px; max-width:64px; object-fit:contain; opacity:.85; }
+.ft-logo img { width:auto; height:34px; max-width:140px; object-fit:contain; opacity:.85; }
 .ft-logo em { color:var(--gold); font-style:normal; }
 .ft-mid { text-align:center; font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:var(--text-dim); }
 .ft-r { text-align:right; font-size:11px; color:var(--text-dim); letter-spacing:.1em; }
@@ -1144,12 +1144,8 @@ body.menu-open { overflow:hidden; }
   section[id], div[id] { scroll-margin-top:var(--mh); }
 
   #hero { grid-template-columns:1fr; min-height:calc(100vh - var(--mh)); }
-  .h-left {
-    min-height:45vh; border-right:none;
-    border-bottom:1px solid rgba(201,168,76,.07);
-    padding:48px 40px;
-  }
-  .h-right { padding:48px var(--pad-x) 60px; justify-content:flex-start; }
+  .h-left { display:none; }
+  .h-right { padding:80px var(--pad-x) 72px; justify-content:flex-start; min-height:calc(100vh - var(--mh)); }
   .h-corner { display:none; }
   .h-scroll { display:none; }
 
@@ -1207,11 +1203,8 @@ body.menu-open { overflow:hidden; }
 
   #mob-hd { padding:0 16px; }
 
-  /* Hero — logo panel compact, non dominant */
-  .h-left { min-height:0; height:auto; padding:28px 20px 22px; }
-  .h-wm { display:none; }
-  .h-logo-giant img { width:clamp(130px,42vw,200px); height:auto; }
-  .h-right { padding:28px var(--pad-x) 48px; }
+  /* Hero — full viewport, content only (logo in fixed header) */
+  .h-right { padding:48px var(--pad-x) 52px; }
   .h-title { font-size:clamp(48px,13vw,76px); }
   .h-sub   { font-size:clamp(16px,5.5vw,26px); }
   .h-desc  { font-size:13px; margin-bottom:36px; }
@@ -1967,7 +1960,6 @@ body.menu-open { overflow:hidden; }
 <footer>
   <div class="ft-logo">
     <img src="TRT LOGO.PNG" alt="TRT Factory">
-    TRT <em>FACTORY</em>
   </div>
   <div class="ft-mid">CRÉER · PRODUIRE · DIFFUSER · IMPACTER</div>
   <div class="ft-r">© 2026 TRT Factory</div>
