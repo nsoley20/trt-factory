@@ -654,49 +654,250 @@ section[id], div[id] { scroll-margin-top:0; }
 }
 
 /* ═══════════════════════════════════════════
-   SERVICES
+   SERVICES — PACKAGES + À LA DEMANDE
 ═══════════════════════════════════════════ */
 #services { background:var(--black); padding:var(--pad-y) var(--pad-x); }
-.svc-hd { margin-bottom:56px; }
-.svc-list { display:flex; flex-direction:column; }
-.svc {
-  display:grid; grid-template-columns:72px 1fr auto;
-  gap:32px; align-items:center;
-  padding:28px 0; border-bottom:1px solid var(--grey-3);
-  text-decoration:none; color:inherit;
+.svc-hd { margin-bottom:72px; }
+.svc-intro { font-size:14px; line-height:1.8; color:var(--text-dim); max-width:480px; margin-top:14px; }
+
+/* ── Packages ── */
+.pkg-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:rgba(201,168,76,.05); margin-bottom:96px;
+}
+.pkg-card {
+  background:var(--grey); padding:48px 40px 44px;
+  display:flex; flex-direction:column; position:relative; overflow:hidden;
+  transition:background .5s;
+}
+.pkg-card.featured { background:var(--grey-2); }
+.pkg-card::after {
+  content:''; position:absolute; left:0; top:0; width:2px; height:100%;
+  transform:scaleY(0); transform-origin:top;
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.pkg-card:nth-child(1)::after { background:var(--gold); }
+.pkg-card:nth-child(2)::after { background:var(--gold-light); }
+.pkg-card:nth-child(3)::after { background:var(--gold-cold); }
+.pkg-card:hover::after { transform:scaleY(1); }
+.pkg-card:hover { background:rgba(201,168,76,.04); }
+.pkg-badge {
+  font-family:'Syncopate',sans-serif; font-size:7px; font-weight:700;
+  letter-spacing:.4em; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px;
+}
+.pkg-card:nth-child(2) .pkg-badge { color:var(--gold); }
+.pkg-name {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(40px,4.5vw,62px);
+  line-height:1; letter-spacing:.02em; margin-bottom:6px;
+}
+.pkg-card:nth-child(1) .pkg-name { color:var(--gold); }
+.pkg-card:nth-child(2) .pkg-name { color:var(--gold-light); }
+.pkg-card:nth-child(3) .pkg-name { color:var(--gold-cold); }
+.pkg-disciplines {
+  font-family:'Syncopate',sans-serif; font-size:7.5px; letter-spacing:.22em;
+  color:var(--text-dim); text-transform:uppercase; margin-bottom:20px;
+}
+.pkg-economy {
+  font-family:'Syncopate',sans-serif; font-size:7px; letter-spacing:.2em;
+  color:var(--gold); text-transform:uppercase; margin-bottom:8px;
+}
+.pkg-price {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(38px,4vw,58px);
+  line-height:1; letter-spacing:.02em; color:var(--white); margin-bottom:4px;
+}
+.pkg-price-note { font-family:'Barlow',sans-serif; font-size:11px; color:var(--text-dim); margin-bottom:28px; }
+.pkg-sep { width:28px; height:1px; background:rgba(201,168,76,.2); margin-bottom:24px; }
+.pkg-items { list-style:none; margin-bottom:32px; flex:1; }
+.pkg-item {
+  font-size:13px; line-height:1.7; color:var(--text-dim);
+  padding:7px 0; border-bottom:1px solid rgba(201,168,76,.05);
+  display:flex; align-items:flex-start; gap:10px;
+}
+.pkg-item:last-child { border-bottom:none; }
+.pkg-item::before { content:'—'; color:var(--gold); font-size:10px; flex-shrink:0; margin-top:3px; }
+.pkg-cta {
+  font-family:'Syncopate',sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:.28em; text-transform:uppercase;
+  color:var(--black); background:var(--gold);
+  padding:14px 20px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  clip-path:polygon(0 0,100% 0,95% 100%,0 100%);
+  transition:background .3s,transform .2s,clip-path .3s; width:100%;
+}
+.pkg-cta:hover { background:var(--gold-light); transform:translateX(3px); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); }
+
+/* ── Services à la demande ── */
+.svc-demande-hd { margin-bottom:32px; }
+.svc-demande-hd .sec-lbl { margin-bottom:10px; }
+.svc-demande-title {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(30px,3.8vw,52px);
+  line-height:1; letter-spacing:.02em; color:var(--white);
+}
+.svc-tabs { display:flex; border-bottom:1px solid var(--grey-3); }
+.svc-tab {
+  font-family:'Syncopate',sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:.3em; text-transform:uppercase; color:var(--text-dim);
+  background:none; border:none; border-bottom:2px solid transparent;
+  padding:14px 28px; cursor:pointer; margin-bottom:-1px;
+  transition:color .3s,border-color .3s;
+}
+.svc-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.svc-tab:hover:not(.active) { color:var(--white); }
+.svc-tab-pane { display:none; }
+.svc-tab-pane.active { display:block; }
+.svc-items-list { display:flex; flex-direction:column; }
+.svc-row {
+  display:grid; grid-template-columns:44px 1fr auto 44px;
+  gap:28px; align-items:center;
+  padding:20px 0; border-bottom:1px solid var(--grey-3);
   position:relative; overflow:hidden;
 }
-.svc::before {
+.svc-row::before {
   content:''; position:absolute; inset:0;
-  background:rgba(201,168,76,.03);
-  transform:translateX(-101%); transition:transform .4s ease;
+  background:rgba(201,168,76,.025);
+  transform:translateX(-101%); transition:transform .35s ease;
 }
-.svc:hover::before { transform:translateX(0); }
-.svc:first-child { border-top:1px solid var(--grey-3); }
-.svc-num {
-  font-family:'Bebas Neue',sans-serif; font-size:28px;
-  color:var(--text-dim); transition:color .4s; position:relative; z-index:1;
+.svc-row:hover::before { transform:translateX(0); }
+.svc-row:first-child { border-top:1px solid var(--grey-3); }
+.svc-row-num {
+  font-family:'Bebas Neue',sans-serif; font-size:24px;
+  color:var(--text-dim); transition:color .3s; position:relative; z-index:1;
 }
-.svc:hover .svc-num { color:var(--gold); }
-.svc-info { position:relative; z-index:1; min-width:0; }
-.svc-name {
-  font-family:'Bebas Neue',sans-serif; font-size:clamp(28px,3.5vw,42px);
-  letter-spacing:.02em; line-height:1; margin-bottom:4px;
-  transition:color .4s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+.svc-row:hover .svc-row-num { color:var(--gold); }
+.svc-row-info { position:relative; z-index:1; }
+.svc-row-name {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(22px,2.6vw,34px);
+  letter-spacing:.02em; line-height:1; margin-bottom:4px; transition:color .3s;
 }
-.svc:hover .svc-name { color:var(--gold); }
-.svc-sub {
-  font-size:10px; letter-spacing:.15em; color:var(--text-dim);
-  text-transform:uppercase; font-family:'Syncopate',sans-serif;
+.svc-row:hover .svc-row-name { color:var(--gold); }
+.svc-row-desc {
+  font-size:10px; letter-spacing:.18em; color:var(--text-dim);
+  font-family:'Syncopate',sans-serif; text-transform:uppercase;
 }
-.svc-arr {
-  font-family:'Syncopate',sans-serif; font-size:9px;
-  letter-spacing:.2em; color:var(--text-dim);
+.svc-row-price {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(17px,2vw,26px);
+  color:var(--white); white-space:nowrap; position:relative; z-index:1;
+  text-align:right; transition:color .3s;
+}
+.svc-row:hover .svc-row-price { color:var(--gold); }
+.svc-row-add {
+  width:40px; height:40px; border:1px solid var(--grey-3); background:none;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; position:relative; z-index:2; flex-shrink:0;
+  transition:border-color .3s,background .3s;
+}
+.svc-row-add:hover { border-color:var(--gold); background:rgba(201,168,76,.08); }
+.svc-row-add.added { border-color:var(--gold); background:var(--gold); }
+.svc-row-add.added .add-path { stroke:var(--black); }
+.add-icon { display:flex; transition:transform .3s; }
+.svc-row-add.added .add-icon { transform:rotate(45deg); }
+
+/* ── Floating devis button ── */
+#devis-fab {
+  position:fixed; bottom:32px; right:32px; z-index:700;
   display:flex; align-items:center; gap:10px;
-  position:relative; z-index:1; white-space:nowrap;
-  transition:color .4s, gap .4s;
+  font-family:'Syncopate',sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:.25em; text-transform:uppercase;
+  color:var(--black); background:var(--gold); padding:16px 22px;
+  border:none; cursor:pointer;
+  clip-path:polygon(0 0,100% 0,95% 100%,0 100%);
+  box-shadow:0 8px 32px rgba(201,168,76,.28);
+  opacity:0; transform:translateY(20px); pointer-events:none;
+  transition:background .3s,transform .3s,opacity .3s,clip-path .3s;
 }
-.svc:hover .svc-arr { color:var(--gold); gap:18px; }
+#devis-fab.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+#devis-fab:hover { background:var(--gold-light); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); transform:translateY(-2px); }
+#devis-fab-count {
+  min-width:20px; height:20px; border-radius:50%;
+  background:var(--black); color:var(--gold);
+  font-family:'Bebas Neue',sans-serif; font-size:15px; line-height:1;
+  display:inline-flex; align-items:center; justify-content:center; padding:0 4px;
+}
+
+/* ── Quote modal ── */
+#quote-modal {
+  position:fixed; inset:0; z-index:900;
+  display:flex; align-items:stretch; justify-content:flex-end;
+  opacity:0; visibility:hidden; transition:opacity .4s,visibility .4s;
+}
+#quote-modal.open { opacity:1; visibility:visible; }
+.qm-backdrop { position:absolute; inset:0; background:rgba(6,6,8,.75); backdrop-filter:blur(4px); }
+.qm-panel {
+  position:relative; z-index:1; width:min(560px,100vw);
+  background:var(--grey); border-left:1px solid rgba(201,168,76,.1);
+  display:flex; flex-direction:column;
+  transform:translateX(100%); transition:transform .45s cubic-bezier(.16,1,.3,1);
+}
+#quote-modal.open .qm-panel { transform:translateX(0); }
+.qm-header {
+  padding:28px 36px 22px; border-bottom:1px solid rgba(201,168,76,.07);
+  display:flex; justify-content:space-between; align-items:flex-start; flex-shrink:0;
+}
+.qm-title { font-family:'Bebas Neue',sans-serif; font-size:30px; letter-spacing:.03em; color:var(--white); }
+.qm-subtitle { font-family:'Syncopate',sans-serif; font-size:7.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-top:4px; }
+.qm-close {
+  width:38px; height:38px; background:var(--grey-2); border:1px solid var(--grey-3);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:border-color .3s;
+}
+.qm-close:hover { border-color:var(--gold); }
+.qm-scroll { flex:1; overflow-y:auto; padding:24px 36px; }
+.qm-scroll::-webkit-scrollbar { width:2px; }
+.qm-scroll::-webkit-scrollbar-thumb { background:var(--gold); }
+.qm-disc-lbl {
+  font-family:'Syncopate',sans-serif; font-size:7.5px; font-weight:700;
+  letter-spacing:.4em; text-transform:uppercase; color:var(--gold);
+  display:flex; align-items:center; gap:10px; margin:20px 0 6px;
+}
+.qm-disc-lbl:first-child { margin-top:0; }
+.qm-disc-lbl::after { content:''; flex:1; height:1px; background:rgba(201,168,76,.1); }
+.qm-list { list-style:none; margin-bottom:4px; }
+.qm-entry {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 0; border-bottom:1px solid rgba(201,168,76,.04); gap:10px;
+}
+.qm-entry:last-child { border-bottom:none; }
+.qm-entry-name { font-size:13px; color:var(--white); flex:1; }
+.qm-entry-price { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gold); white-space:nowrap; }
+.qm-entry-rm {
+  width:22px; height:22px; background:none; border:1px solid rgba(201,168,76,.2);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:border-color .3s,background .3s;
+}
+.qm-entry-rm:hover { border-color:var(--gold); background:rgba(201,168,76,.1); }
+.qm-pkg-entry {
+  background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.12);
+  padding:16px 18px; margin-bottom:4px;
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+.qm-pkg-name { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:.03em; color:var(--gold-light); }
+.qm-pkg-meta { font-family:'Syncopate',sans-serif; font-size:7px; letter-spacing:.2em; color:var(--text-dim); text-transform:uppercase; margin-top:2px; }
+.qm-pkg-price { font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--gold); }
+.qm-empty {
+  font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--text-dim); text-align:center; padding:40px 0;
+}
+.qm-footer {
+  flex-shrink:0; padding:20px 36px;
+  border-top:1px solid rgba(201,168,76,.1); background:var(--grey-2);
+}
+.qm-total-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+.qm-total-lbl { font-family:'Syncopate',sans-serif; font-size:7.5px; letter-spacing:.4em; text-transform:uppercase; color:var(--text-dim); }
+.qm-total-val { font-family:'Bebas Neue',sans-serif; font-size:38px; line-height:1; color:var(--gold); letter-spacing:.02em; }
+.qm-total-note { font-size:11px; color:var(--text-dim); margin-bottom:18px; }
+.qm-form { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+.qm-f-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.qm-submit {
+  width:100%; background:var(--gold); color:var(--black);
+  font-family:'Syncopate',sans-serif; font-size:8.5px; font-weight:700;
+  letter-spacing:.28em; text-transform:uppercase;
+  padding:15px 20px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  clip-path:polygon(0 0,100% 0,95% 100%,0 100%);
+  transition:background .3s,transform .2s,clip-path .3s;
+}
+.qm-submit:hover { background:var(--gold-light); transform:translateX(2px); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); }
+.qm-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
 /* ═══════════════════════════════════════════
    PORTFOLIO
@@ -985,8 +1186,11 @@ body.menu-open { overflow:hidden; }
   .stat:nth-child(3) { border-right:1px solid rgba(0,0,0,.12); padding-left:0; text-align:left; }
 
   #services { padding:var(--pad-y) var(--pad-x); }
-  .svc { grid-template-columns:56px 1fr; gap:20px; }
-  .svc-arr { display:none; }
+  .pkg-grid { grid-template-columns:1fr; }
+  .pkg-card.featured { background:var(--grey); }
+  .svc-row { grid-template-columns:36px 1fr auto 40px; gap:16px; }
+  #devis-fab { bottom:20px; right:20px; }
+  .qm-panel { width:100vw; }
 
   #difference { grid-template-columns:1fr; }
   .diff-right { min-height:340px; padding:48px; border-top:1px solid rgba(201,168,76,.07); }
@@ -1029,9 +1233,13 @@ body.menu-open { overflow:hidden; }
   .stat { padding:0 12px; }
   .stat:first-child,.stat:nth-child(3) { padding-left:0; }
 
-  .svc { grid-template-columns:44px 1fr; gap:14px; padding:22px 0; }
-  .svc-num { font-size:22px; }
-  .svc-name { font-size:clamp(22px,6vw,32px); white-space:normal; }
+  .svc-tab { padding:12px 14px; letter-spacing:.18em; }
+  .svc-row { grid-template-columns:30px 1fr 36px; gap:12px; padding:16px 0; }
+  .svc-row-price { display:none; }
+  .qm-header,.qm-scroll,.qm-footer { padding-left:20px; padding-right:20px; }
+  .qm-f-row { grid-template-columns:1fr; }
+  #devis-fab { bottom:16px; right:16px; padding:13px 16px; font-size:7.5px; }
+  .pkg-grid { margin-bottom:64px; }
 
   .diff-right { display:none; }
 
@@ -1323,42 +1531,207 @@ body.menu-open { overflow:hidden; }
 <!-- ═══ SERVICES ═══ -->
 <section id="services" aria-label="Nos services">
   <div class="svc-hd">
-    <div class="sec-lbl rv">Ce Qu'on Construit</div>
+    <div class="sec-lbl rv">Nos Offres</div>
     <h2 class="sec-title rv d1">Ce qu'on <span class="g">construit.</span></h2>
+    <p class="svc-intro rv d2">Choisissez un package complet ou composez votre projet à la carte.</p>
   </div>
-  <div class="svc-list" role="list">
-    <a href="#contact" class="svc rv" role="listitem">
-      <div class="svc-num" aria-hidden="true">01</div>
-      <div class="svc-info">
-        <div class="svc-name">Identités de Marque</div>
-        <div class="svc-sub">Nous concevons des univers visuels cohérents et mémorables.</div>
+
+  <!-- PACKAGES -->
+  <div class="pkg-grid">
+    <div class="pkg-card rv">
+      <div class="pkg-badge">Pack 01 · Design + Digital</div>
+      <div class="pkg-name">Starter</div>
+      <div class="pkg-disciplines">Design · Digital</div>
+      <div class="pkg-price">450 000</div>
+      <div class="pkg-price-note">XAF — tarif de lancement</div>
+      <div class="pkg-sep" aria-hidden="true"></div>
+      <ul class="pkg-items">
+        <li class="pkg-item">Logo &amp; identité visuelle</li>
+        <li class="pkg-item">Pack réseaux sociaux (3 templates)</li>
+        <li class="pkg-item">Site vitrine 5 pages</li>
+        <li class="pkg-item">Déploiement inclus</li>
+      </ul>
+      <button class="pkg-cta" data-pkg-name="Pack Starter" data-pkg-price="450000" data-pkg-disc="Design · Digital">
+        Choisir ce pack
+        <svg width="14" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true"><path d="M0 5H14M10 1L14 5L10 9" stroke="#080808" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+    <div class="pkg-card featured rv d1">
+      <div class="pkg-badge">Pack 02 · Recommandé</div>
+      <div class="pkg-name">Studio</div>
+      <div class="pkg-disciplines">Design · Cinéma · Digital</div>
+      <div class="pkg-economy">Économie de 130 000 XAF</div>
+      <div class="pkg-price">900 000</div>
+      <div class="pkg-price-note">XAF — les 3 expertises</div>
+      <div class="pkg-sep" aria-hidden="true"></div>
+      <ul class="pkg-items">
+        <li class="pkg-item">Identité visuelle complète</li>
+        <li class="pkg-item">Charte graphique</li>
+        <li class="pkg-item">Film de marque 60s</li>
+        <li class="pkg-item">Site web 8 pages</li>
+        <li class="pkg-item">Pack réseaux (5 templates)</li>
+      </ul>
+      <button class="pkg-cta" data-pkg-name="Pack Studio" data-pkg-price="900000" data-pkg-disc="Design · Cinéma · Digital">
+        Choisir ce pack
+        <svg width="14" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true"><path d="M0 5H14M10 1L14 5L10 9" stroke="#080808" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+    <div class="pkg-card rv d2">
+      <div class="pkg-badge">Pack 03 · Full Service</div>
+      <div class="pkg-name">Prestige</div>
+      <div class="pkg-disciplines">Design · Cinéma · Digital</div>
+      <div class="pkg-economy">Économie de 400 000 XAF</div>
+      <div class="pkg-price">1 800 000</div>
+      <div class="pkg-price-note">XAF — expérience complète</div>
+      <div class="pkg-sep" aria-hidden="true"></div>
+      <ul class="pkg-items">
+        <li class="pkg-item">Direction artistique complète</li>
+        <li class="pkg-item">Film de marque + Shooting photo</li>
+        <li class="pkg-item">Pack Reels (×3) + Motion design</li>
+        <li class="pkg-item">Site web sur mesure + UX/UI</li>
+        <li class="pkg-item">SEO 3 mois · Pack réseaux (10)</li>
+      </ul>
+      <button class="pkg-cta" data-pkg-name="Pack Prestige" data-pkg-price="1800000" data-pkg-disc="Design · Cinéma · Digital">
+        Choisir ce pack
+        <svg width="14" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true"><path d="M0 5H14M10 1L14 5L10 9" stroke="#080808" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- À LA DEMANDE -->
+  <div class="svc-demande">
+    <div class="svc-demande-hd rv">
+      <div class="sec-lbl">À la demande</div>
+      <div class="svc-demande-title">Composez <span class="g">votre projet.</span></div>
+    </div>
+    <div class="svc-tabs rv d1" role="tablist">
+      <button class="svc-tab active" role="tab" aria-selected="true" aria-controls="pane-design" data-tab="design">Design</button>
+      <button class="svc-tab" role="tab" aria-selected="false" aria-controls="pane-cinema" data-tab="cinema">Cinéma</button>
+      <button class="svc-tab" role="tab" aria-selected="false" aria-controls="pane-digital" data-tab="digital">Digital</button>
+    </div>
+    <!-- Design -->
+    <div class="svc-tab-pane active" id="pane-design" role="tabpanel">
+      <div class="svc-items-list">
+        <div class="svc-row" data-svc-id="d1" data-svc-name="Logo &amp; Identité visuelle" data-svc-price="150000" data-svc-disc="design">
+          <div class="svc-row-num">01</div>
+          <div class="svc-row-info"><div class="svc-row-name">Logo & Identité</div><div class="svc-row-desc">Logotype · déclinaisons · fichiers master</div></div>
+          <div class="svc-row-price">150 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="d2" data-svc-name="Charte graphique" data-svc-price="80000" data-svc-disc="design">
+          <div class="svc-row-num">02</div>
+          <div class="svc-row-info"><div class="svc-row-name">Charte Graphique</div><div class="svc-row-desc">Couleurs · typographies · règles visuelles</div></div>
+          <div class="svc-row-price">80 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="d3" data-svc-name="UI Design — maquettes" data-svc-price="200000" data-svc-disc="design">
+          <div class="svc-row-num">03</div>
+          <div class="svc-row-info"><div class="svc-row-name">UI Design</div><div class="svc-row-desc">Maquettes app ou site · prototypage</div></div>
+          <div class="svc-row-price">200 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="d4" data-svc-name="Pack Réseaux Sociaux (5 templates)" data-svc-price="90000" data-svc-disc="design">
+          <div class="svc-row-num">04</div>
+          <div class="svc-row-info"><div class="svc-row-name">Pack Réseaux</div><div class="svc-row-desc">5 templates · Instagram · TikTok · LinkedIn</div></div>
+          <div class="svc-row-price">90 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="d5" data-svc-name="Print — affiche / flyer / brochure" data-svc-price="45000" data-svc-disc="design">
+          <div class="svc-row-num">05</div>
+          <div class="svc-row-info"><div class="svc-row-name">Print</div><div class="svc-row-desc">Affiche · flyer · brochure · carte de visite</div></div>
+          <div class="svc-row-price">45 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="d6" data-svc-name="Stratégie de marque" data-svc-price="120000" data-svc-disc="design">
+          <div class="svc-row-num">06</div>
+          <div class="svc-row-info"><div class="svc-row-name">Stratégie de Marque</div><div class="svc-row-desc">Positionnement · tone of voice · cible</div></div>
+          <div class="svc-row-price">120 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
       </div>
-      <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
-    </a>
-    <a href="#contact" class="svc rv d1" role="listitem">
-      <div class="svc-num" aria-hidden="true">02</div>
-      <div class="svc-info">
-        <div class="svc-name">Production Visuelle</div>
-        <div class="svc-sub">Nous produisons du contenu qui attire et retient l'attention.</div>
+    </div>
+    <!-- Cinéma -->
+    <div class="svc-tab-pane" id="pane-cinema" role="tabpanel">
+      <div class="svc-items-list">
+        <div class="svc-row" data-svc-id="c1" data-svc-name="Film de marque (60–90s)" data-svc-price="350000" data-svc-disc="cinema">
+          <div class="svc-row-num">01</div>
+          <div class="svc-row-info"><div class="svc-row-name">Film de Marque</div><div class="svc-row-desc">Tournage · montage · étalonnage · 60–90s</div></div>
+          <div class="svc-row-price">350 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="c2" data-svc-name="Shooting photo (demi-journée)" data-svc-price="150000" data-svc-disc="cinema">
+          <div class="svc-row-num">02</div>
+          <div class="svc-row-info"><div class="svc-row-name">Shooting Photo</div><div class="svc-row-desc">Demi-journée · retouche · livraison HD</div></div>
+          <div class="svc-row-price">150 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="c3" data-svc-name="Pack Reels / TikTok (×3)" data-svc-price="130000" data-svc-disc="cinema">
+          <div class="svc-row-num">03</div>
+          <div class="svc-row-info"><div class="svc-row-name">Pack Reels</div><div class="svc-row-desc">3 vidéos courtes · musique · sous-titres</div></div>
+          <div class="svc-row-price">130 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="c4" data-svc-name="Clip musical" data-svc-price="500000" data-svc-disc="cinema">
+          <div class="svc-row-num">04</div>
+          <div class="svc-row-info"><div class="svc-row-name">Clip Musical</div><div class="svc-row-desc">Direction artistique · tournage · montage ciné</div></div>
+          <div class="svc-row-price">500 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="c5" data-svc-name="Montage vidéo" data-svc-price="80000" data-svc-disc="cinema">
+          <div class="svc-row-num">05</div>
+          <div class="svc-row-info"><div class="svc-row-name">Montage Vidéo</div><div class="svc-row-desc">Rushs fournis · étalonnage · sous-titres</div></div>
+          <div class="svc-row-price">80 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="c6" data-svc-name="Motion design" data-svc-price="110000" data-svc-disc="cinema">
+          <div class="svc-row-num">06</div>
+          <div class="svc-row-info"><div class="svc-row-name">Motion Design</div><div class="svc-row-desc">Animation logo · intro · bumper vidéo</div></div>
+          <div class="svc-row-price">110 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
       </div>
-      <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
-    </a>
-    <a href="#contact" class="svc rv d2" role="listitem">
-      <div class="svc-num" aria-hidden="true">03</div>
-      <div class="svc-info">
-        <div class="svc-name">Expériences Digitales</div>
-        <div class="svc-sub">Nous développons des plateformes modernes pensées pour l'utilisateur.</div>
+    </div>
+    <!-- Digital -->
+    <div class="svc-tab-pane" id="pane-digital" role="tabpanel">
+      <div class="svc-items-list">
+        <div class="svc-row" data-svc-id="w1" data-svc-name="Site vitrine (5 pages)" data-svc-price="300000" data-svc-disc="digital">
+          <div class="svc-row-num">01</div>
+          <div class="svc-row-info"><div class="svc-row-name">Site Vitrine</div><div class="svc-row-desc">5 pages · responsive · CMS · déploiement</div></div>
+          <div class="svc-row-price">300 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="w2" data-svc-name="Site e-commerce" data-svc-price="600000" data-svc-disc="digital">
+          <div class="svc-row-num">02</div>
+          <div class="svc-row-info"><div class="svc-row-name">E-Commerce</div><div class="svc-row-desc">Boutique · paiement · gestion produits</div></div>
+          <div class="svc-row-price">600 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="w3" data-svc-name="Application web sur mesure" data-svc-price="900000" data-svc-disc="digital">
+          <div class="svc-row-num">03</div>
+          <div class="svc-row-info"><div class="svc-row-name">App Web</div><div class="svc-row-desc">Sur mesure · dashboard · API · full-stack</div></div>
+          <div class="svc-row-price">900 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="w4" data-svc-name="UX/UI Design complet" data-svc-price="280000" data-svc-disc="digital">
+          <div class="svc-row-num">04</div>
+          <div class="svc-row-info"><div class="svc-row-name">UX/UI Complet</div><div class="svc-row-desc">Recherche · wireframes · prototypage · tests</div></div>
+          <div class="svc-row-price">280 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="w5" data-svc-name="SEO — référencement 3 mois" data-svc-price="90000" data-svc-disc="digital">
+          <div class="svc-row-num">05</div>
+          <div class="svc-row-info"><div class="svc-row-name">SEO</div><div class="svc-row-desc">Audit · optimisation · rapport mensuel · 3 mois</div></div>
+          <div class="svc-row-price">90 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
+        <div class="svc-row" data-svc-id="w6" data-svc-name="Déploiement &amp; maintenance" data-svc-price="60000" data-svc-disc="digital">
+          <div class="svc-row-num">06</div>
+          <div class="svc-row-info"><div class="svc-row-name">Déploiement & Maintenance</div><div class="svc-row-desc">Hébergement · DNS · mises à jour · support</div></div>
+          <div class="svc-row-price">60 000 XAF</div>
+          <button class="svc-row-add" aria-label="Ajouter au devis"><span class="add-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="add-path"/></svg></span></button>
+        </div>
       </div>
-      <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
-    </a>
-    <a href="#contact" class="svc rv d3" role="listitem">
-      <div class="svc-num" aria-hidden="true">04</div>
-      <div class="svc-info">
-        <div class="svc-name">Stratégie & Diffusion</div>
-        <div class="svc-sub">Nous amplifions votre présence pour générer un impact mesurable.</div>
-      </div>
-      <div class="svc-arr" aria-hidden="true">Démarrer <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg></div>
-    </a>
+    </div>
   </div>
 </section>
 
@@ -1521,6 +1894,50 @@ body.menu-open { overflow:hidden; }
 
 </div><!-- /wrap -->
 
+<!-- ═══ QUOTE MODAL ═══ -->
+<div id="quote-modal" role="dialog" aria-modal="true" aria-labelledby="qm-title-txt">
+  <div class="qm-backdrop" id="qm-backdrop"></div>
+  <div class="qm-panel">
+    <div class="qm-header">
+      <div>
+        <div class="qm-title" id="qm-title-txt">Mon Devis</div>
+        <div class="qm-subtitle">Générateur de devis TRT Factory</div>
+      </div>
+      <button class="qm-close" id="qm-close" aria-label="Fermer">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+    <div class="qm-scroll" id="qm-scroll">
+      <p class="qm-empty" id="qm-empty">Sélectionnez un package ou des services ci-dessous</p>
+      <div id="qm-pkg-slot"></div>
+      <div id="qm-items-slot"></div>
+    </div>
+    <div class="qm-footer">
+      <div class="qm-total-row">
+        <span class="qm-total-lbl">Total estimé</span>
+        <span class="qm-total-val" id="qm-total-val">0 XAF</span>
+      </div>
+      <p class="qm-total-note">Tarifs indicatifs · devis définitif confirmé après échange</p>
+      <form class="qm-form" id="qm-form" novalidate>
+        <div class="qm-f-row">
+          <input type="text" name="qm-name" class="f-in" placeholder="Votre nom" autocomplete="name">
+          <input type="email" name="qm-email" class="f-in" placeholder="Votre email" autocomplete="email">
+        </div>
+        <button type="submit" class="qm-submit" id="qm-submit" disabled>
+          Envoyer la demande
+          <svg width="14" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true"><path d="M0 5H14M10 1L14 5L10 9" stroke="#080808" stroke-width="1.5"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Floating devis button -->
+<button id="devis-fab" aria-label="Ouvrir mon devis">
+  Mon Devis
+  <span id="devis-fab-count">0</span>
+</button>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="ft-logo">
@@ -1677,6 +2094,145 @@ if(form){
       btn.disabled = false;
       form.reset();
     }, 3500);
+  });
+}
+
+/* ─── SERVICES TABS ─── */
+$$('.svc-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    $$('.svc-tab').forEach(t=>{ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    $$('.svc-tab-pane').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    const pane=document.getElementById('pane-'+tab.dataset.tab);
+    if(pane) pane.classList.add('active');
+  });
+});
+
+/* ─── QUOTE GENERATOR ─── */
+const qState={ pkg:null, items:[] };
+const devisFab   = $('devis-fab');
+const fabCount   = $('devis-fab-count');
+const quoteModal = $('quote-modal');
+const qmEmpty    = $('qm-empty');
+const qmPkgSlot  = $('qm-pkg-slot');
+const qmItemSlot = $('qm-items-slot');
+const qmTotalVal = $('qm-total-val');
+const qmSubmitBtn= $('qm-submit');
+const qmForm     = $('qm-form');
+const discLbls   = {design:'Design',cinema:'Cinéma',digital:'Digital'};
+
+function fmtXAF(n){ return n.toLocaleString('fr-FR')+' XAF'; }
+function getTotal(){ return (qState.pkg?qState.pkg.price:0)+qState.items.reduce((s,i)=>s+i.price,0); }
+
+function renderModal(){
+  const has = qState.pkg||qState.items.length>0;
+  qmEmpty.style.display = has?'none':'block';
+  qmTotalVal.textContent = fmtXAF(getTotal());
+  qmSubmitBtn.disabled = !has;
+
+  if(qState.pkg){
+    qmPkgSlot.innerHTML=`<div class="qm-disc-lbl">Package sélectionné</div>
+    <div class="qm-pkg-entry">
+      <div><div class="qm-pkg-name">${qState.pkg.name}</div><div class="qm-pkg-meta">${qState.pkg.disc}</div></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="qm-pkg-price">${fmtXAF(qState.pkg.price)}</div>
+        <button class="qm-entry-rm" onclick="window.qRemovePkg()" aria-label="Retirer">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+      </div>
+    </div>`;
+  } else { qmPkgSlot.innerHTML=''; }
+
+  if(qState.items.length>0){
+    const byDisc={};
+    qState.items.forEach(i=>{ if(!byDisc[i.disc]) byDisc[i.disc]=[]; byDisc[i.disc].push(i); });
+    let h='<div class="qm-disc-lbl">Services à la demande</div><ul class="qm-list">';
+    Object.entries(byDisc).forEach(([disc,items])=>{
+      items.forEach(item=>{
+        h+=`<li class="qm-entry">
+          <span class="qm-entry-name"><span style="color:var(--text-dim);font-size:9px;font-family:Syncopate,sans-serif;letter-spacing:.2em">${discLbls[disc]} · </span>${item.name}</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <span class="qm-entry-price">${fmtXAF(item.price)}</span>
+            <button class="qm-entry-rm" onclick="window.qRemoveItem('${item.id}')" aria-label="Retirer">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+          </div></li>`;
+      });
+    });
+    h+='</ul>'; qmItemSlot.innerHTML=h;
+  } else { qmItemSlot.innerHTML=''; }
+  updateFab();
+}
+
+function updateFab(){
+  const n=(qState.pkg?1:0)+qState.items.length;
+  if(n>0){ devisFab.classList.add('show'); fabCount.textContent=n; }
+  else devisFab.classList.remove('show');
+}
+
+function openQModal(){ quoteModal.classList.add('open'); document.body.style.overflow='hidden'; renderModal(); }
+function closeQModal(){ quoteModal.classList.remove('open'); document.body.style.overflow=''; }
+
+window.qRemovePkg=function(){ qState.pkg=null; renderModal(); };
+window.qRemoveItem=function(id){
+  const idx=qState.items.findIndex(i=>i.id===id);
+  if(idx>-1) qState.items.splice(idx,1);
+  const row=document.querySelector(`.svc-row[data-svc-id="${id}"]`);
+  if(row) row.querySelector('.svc-row-add')?.classList.remove('added');
+  renderModal();
+};
+
+$$('.pkg-cta').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    qState.pkg={ name:btn.dataset.pkgName, price:parseInt(btn.dataset.pkgPrice), disc:btn.dataset.pkgDisc };
+    openQModal();
+  });
+});
+
+$$('.svc-row').forEach(row=>{
+  const addBtn=row.querySelector('.svc-row-add');
+  if(!addBtn) return;
+  addBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const id=row.dataset.svcId, name=row.dataset.svcName,
+          price=parseInt(row.dataset.svcPrice), disc=row.dataset.svcDisc;
+    const idx=qState.items.findIndex(i=>i.id===id);
+    if(idx>-1){ qState.items.splice(idx,1); addBtn.classList.remove('added'); }
+    else { qState.items.push({id,name,price,disc}); addBtn.classList.add('added'); }
+    updateFab();
+    if(quoteModal.classList.contains('open')) renderModal();
+  });
+});
+
+devisFab.addEventListener('click',openQModal);
+$('qm-close').addEventListener('click',closeQModal);
+$('qm-backdrop').addEventListener('click',closeQModal);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&quoteModal.classList.contains('open')) closeQModal(); });
+
+if(qmForm){
+  qmForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const nm=qmForm.querySelector('[name="qm-name"]').value.trim();
+    const em=qmForm.querySelector('[name="qm-email"]').value.trim();
+    if(!nm||!em) return;
+    const total=getTotal();
+    let body=`Demande de devis — TRT Factory\n══════════════════════════════\n\nClient : ${nm}\nEmail  : ${em}\n\n`;
+    if(qState.pkg) body+=`PACKAGE : ${qState.pkg.name} (${qState.pkg.disc})\n         ${fmtXAF(qState.pkg.price)}\n\n`;
+    if(qState.items.length>0){
+      body+=`SERVICES À LA DEMANDE :\n`;
+      qState.items.forEach(i=>{ body+=`  — ${i.name} : ${fmtXAF(i.price)}\n`; });
+      body+='\n';
+    }
+    body+=`══════════════════════════════\nTOTAL ESTIMÉ : ${fmtXAF(total)}\n\n(Tarifs indicatifs — devis définitif après échange)`;
+    window.location.href=`mailto:contact@trtfactory.com?subject=${encodeURIComponent('Demande de devis — '+nm)}&body=${encodeURIComponent(body)}`;
+  });
+}
+
+/* update cursor listener to include new interactive elements */
+if(isFinePt){
+  $$('.pkg-card,.svc-row,.pkg-cta,.svc-row-add,#devis-fab').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('cur-lg'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-lg'));
   });
 }
 </script>
