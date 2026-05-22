@@ -973,6 +973,49 @@ p, li { color:var(--text-body); line-height:1.85; }
 .ptf-panel { display:block; }
 .ptf-panel-hidden { display:none; }
 
+/* ── Portfolio Dev Showcase ── */
+.ptf-dev-showcase {
+  padding:var(--pad-y) var(--pad-x);
+  display:flex; flex-direction:column; align-items:center; gap:36px;
+}
+.ptf-dev-browser {
+  width:100%; max-width:960px;
+  border-radius:10px; overflow:hidden;
+  border:1px solid var(--grey-3);
+  box-shadow:0 32px 100px rgba(0,0,0,.6);
+}
+.ptf-dev-bar {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 16px; background:var(--grey-3);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.ptf-dev-dots { display:flex; gap:6px; }
+.ptf-dev-dots i { width:10px; height:10px; border-radius:50%; display:block; }
+.ptf-dev-dots i:nth-child(1) { background:#ff5f57; }
+.ptf-dev-dots i:nth-child(2) { background:#febc2e; }
+.ptf-dev-dots i:nth-child(3) { background:#28c840; }
+.ptf-dev-urlbar {
+  flex:1; text-align:center;
+  font-family:'Barlow',sans-serif; font-size:11px; color:var(--text-dim);
+  background:var(--grey-2); padding:4px 14px; border-radius:4px;
+  letter-spacing:.02em;
+}
+.ptf-dev-ext {
+  color:var(--text-dim); text-decoration:none; display:flex;
+  align-items:center; transition:color .2s ease;
+}
+.ptf-dev-ext:hover { color:var(--gold); }
+.ptf-dev-browser iframe {
+  width:100%; height:560px; display:block; border:none;
+  background:var(--grey-2);
+}
+.ptf-dev-browser-overlay {
+  position:relative;
+}
+.ptf-dev-browser-overlay::after {
+  content:''; position:absolute; inset:0; cursor:pointer; z-index:1;
+}
+
 /* ── Portfolio Bientôt Panel ── */
 .ptf-soon-panel {
   min-height:540px; display:flex; align-items:center; justify-content:center;
@@ -1213,6 +1256,8 @@ footer {
   .ptf-tab { padding:18px 20px 16px; }
   .ptf-tab::after { left:20px; right:20px; }
   .ptf-soon-panel { min-height:400px; }
+  .ptf-dev-browser iframe { height:420px; }
+  .ptf-dev-showcase { gap:24px; }
   .ptf-lb-inner { width:100%; }
 }
 
@@ -1278,6 +1323,8 @@ footer {
   .ptf-tab-badge { display:none; }
   .ptf-soon-panel { min-height:320px; padding:var(--pad-y) var(--pad-x); }
   .ptf-sp-tag::before,.ptf-sp-tag::after { width:20px; }
+  .ptf-dev-browser iframe { height:280px; }
+  .ptf-dev-showcase { padding:var(--pad-y) var(--pad-x); gap:20px; }
   .ptf-lb { padding:48px 12px 32px; }
 }
 </style>
@@ -1884,13 +1931,30 @@ footer {
 
   <!-- PANEL: DÉVELOPPEUR -->
   <div class="ptf-panel ptf-panel-hidden" id="ptf-panel-dev" role="tabpanel">
-    <div class="ptf-soon-panel">
-      <div class="ptf-sp-inner">
-        <div class="ptf-sp-tag">Web · Mobile · Solutions sur mesure</div>
-        <h3 class="ptf-sp-title">Développeur</h3>
-        <p class="ptf-sp-desc">Sites web, applications et solutions digitales — projets en cours d'intégration au portfolio.</p>
-        <div class="ptf-sp-badge">Portfolio en cours de mise en ligne</div>
+    <div class="ptf-dev-showcase">
+      <div class="ptf-sp-tag rv">Sites Web · Applications · Solutions sur mesure</div>
+      <div class="ptf-dev-browser rv d1">
+        <div class="ptf-dev-bar">
+          <div class="ptf-dev-dots"><i></i><i></i><i></i></div>
+          <span class="ptf-dev-urlbar">nsoleyportfolio.vercel.app</span>
+          <a href="https://nsoleyportfolio.vercel.app/" target="_blank" rel="noopener" class="ptf-dev-ext" aria-label="Ouvrir le portfolio">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="ptf-dev-browser-overlay">
+          <iframe
+            src="https://nsoleyportfolio.vercel.app/"
+            title="Portfolio Développeur"
+            loading="lazy"
+            scrolling="no"
+            frameborder="0">
+          </iframe>
+        </div>
       </div>
+      <a href="https://nsoleyportfolio.vercel.app/" target="_blank" rel="noopener" class="btn-ghost rv d2">
+        Voir le portfolio complet
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.2"/></svg>
+      </a>
     </div>
   </div>
 
