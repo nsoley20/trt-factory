@@ -943,6 +943,77 @@ p, li { color:var(--text-body); line-height:1.85; }
 }
 .ptf-soon-txt em { color:var(--gold); font-style:normal; }
 
+/* ── Portfolio Tabs ── */
+.ptf-tabs {
+  display:flex; gap:0; padding:0 var(--pad-x);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.ptf-tab {
+  font-family:'Syncopate',sans-serif;
+  font-size:9px; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--text-dim); background:none; border:none; cursor:pointer;
+  padding:20px 28px 18px; position:relative;
+  display:inline-flex; align-items:center; gap:10px;
+  transition:color .25s ease; white-space:nowrap;
+}
+.ptf-tab::after {
+  content:''; position:absolute; bottom:-1px; left:28px; right:28px;
+  height:1px; background:var(--gold);
+  transform:scaleX(0); transition:transform .3s ease;
+}
+.ptf-tab.active { color:var(--white); }
+.ptf-tab.active::after { transform:scaleX(1); }
+.ptf-tab:hover:not(.active) { color:var(--text-body); }
+.ptf-tab-badge {
+  font-family:'Barlow',sans-serif; font-size:8px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--gold);
+  background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.25);
+  padding:2px 6px; border-radius:2px;
+}
+.ptf-panel { display:block; }
+.ptf-panel-hidden { display:none; }
+
+/* ── Portfolio Bientôt Panel ── */
+.ptf-soon-panel {
+  min-height:540px; display:flex; align-items:center; justify-content:center;
+  padding:var(--pad-y) var(--pad-x);
+}
+.ptf-sp-inner {
+  max-width:560px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:20px;
+}
+.ptf-sp-tag {
+  font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.38em;
+  text-transform:uppercase; color:var(--gold);
+  display:flex; align-items:center; gap:14px;
+}
+.ptf-sp-tag::before,.ptf-sp-tag::after {
+  content:''; width:40px; height:1px; background:rgba(201,168,76,.35);
+}
+.ptf-sp-title {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(64px,8vw,120px);
+  line-height:.9; color:var(--white); letter-spacing:.01em;
+}
+.ptf-sp-desc {
+  font-family:'Barlow',sans-serif; font-size:15px; line-height:1.85;
+  color:var(--text-body); max-width:440px;
+}
+.ptf-sp-badge {
+  font-family:'Syncopate',sans-serif; font-size:7px; letter-spacing:.4em;
+  text-transform:uppercase; color:var(--text-dim);
+  padding:9px 20px; border:1px solid var(--grey-3);
+  display:inline-flex; align-items:center; gap:10px; margin-top:8px;
+}
+.ptf-sp-badge::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--gold); opacity:.6;
+  animation:pulse-dot 2.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:.3; transform:scale(1); }
+  50%      { opacity:.9; transform:scale(1.3); }
+}
+
 /* ── Lightbox ── */
 .ptf-lb {
   position:fixed; inset:0; z-index:9000;
@@ -1138,6 +1209,10 @@ footer {
   .ptf-visuels-strip { height:480px; }
   .ptf-logos-sect,.ptf-visuels-sect { padding:56px var(--pad-x); }
   .ptf-soon { flex-direction:column; align-items:flex-start; }
+  .ptf-tabs { padding:0 var(--pad-x); }
+  .ptf-tab { padding:18px 20px 16px; }
+  .ptf-tab::after { left:20px; right:20px; }
+  .ptf-soon-panel { min-height:400px; }
   .ptf-lb-inner { width:100%; }
 }
 
@@ -1197,6 +1272,12 @@ footer {
   .ptf-logos-grid:hover img { transform:translateY(calc(-100% + 360px)); }
   .ptf-visuels-strip { height:300px; }
   .ptf-visuels-sect,.ptf-logos-sect { padding:44px var(--pad-x); }
+  .ptf-tabs { padding:0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .ptf-tab { padding:16px 16px 14px; font-size:8px; }
+  .ptf-tab::after { left:16px; right:16px; }
+  .ptf-tab-badge { display:none; }
+  .ptf-soon-panel { min-height:320px; padding:var(--pad-y) var(--pad-x); }
+  .ptf-sp-tag::before,.ptf-sp-tag::after { width:20px; }
   .ptf-lb { padding:48px 12px 32px; }
 }
 </style>
@@ -1657,12 +1738,22 @@ footer {
 </section>
 
 <!-- ═══ PORTFOLIO ═══ -->
-<section id="portfolio" aria-label="Portfolio Design">
+<section id="portfolio" aria-label="Nos Créations">
   <div class="ptf-hd">
-    <div class="sec-lbl rv">Portfolio · Design</div>
+    <div class="sec-lbl rv">Portfolio · Créations</div>
     <h2 class="sec-title rv d1">Nos <span class="g">créations.</span></h2>
-    <p class="ptf-intro rv d2">Identités de marque, logos et visuels — réalisés pour des clients au Gabon et en Afrique. Survolez pour explorer, cliquez pour agrandir.</p>
+    <p class="ptf-intro rv d2">Design, cinéma, digital — trois expertises, trois portfolios. Explorez nos réalisations par discipline.</p>
   </div>
+
+  <!-- ONGLETS -->
+  <div class="ptf-tabs" role="tablist">
+    <button class="ptf-tab active" role="tab" aria-selected="true" data-panel="graphiste">Graphiste</button>
+    <button class="ptf-tab" role="tab" aria-selected="false" data-panel="videaste">Vidéaste <span class="ptf-tab-badge">Bientôt</span></button>
+    <button class="ptf-tab" role="tab" aria-selected="false" data-panel="dev">Développeur <span class="ptf-tab-badge">Bientôt</span></button>
+  </div>
+
+  <!-- PANEL: GRAPHISTE -->
+  <div class="ptf-panel" id="ptf-panel-graphiste" role="tabpanel">
 
   <!-- 3 PROJETS — grille éditoriale 2 col, 3e pleine largeur -->
   <div class="ptf-projects">
@@ -1777,13 +1868,30 @@ footer {
     </div>
   </div>
 
-  <!-- BIENTÔT -->
-  <div class="ptf-soon">
-    <div class="ptf-soon-txt"><em>Cinéma & Digital</em> — Portfolios en cours de constitution</div>
-    <a href="#contact" class="btn-ghost">
-      Prendre contact
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.2"/></svg>
-    </a>
+  </div><!-- /ptf-panel-graphiste -->
+
+  <!-- PANEL: VIDÉASTE -->
+  <div class="ptf-panel ptf-panel-hidden" id="ptf-panel-videaste" role="tabpanel">
+    <div class="ptf-soon-panel">
+      <div class="ptf-sp-inner">
+        <div class="ptf-sp-tag">Cinéma · Publicité · Vidéo Sociale</div>
+        <h3 class="ptf-sp-title">Vidéaste</h3>
+        <p class="ptf-sp-desc">Shootings, motion design, publicités — nos réalisations cinématiques arrivent bientôt.</p>
+        <div class="ptf-sp-badge">Portfolio en préparation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: DÉVELOPPEUR -->
+  <div class="ptf-panel ptf-panel-hidden" id="ptf-panel-dev" role="tabpanel">
+    <div class="ptf-soon-panel">
+      <div class="ptf-sp-inner">
+        <div class="ptf-sp-tag">Web · Mobile · Solutions sur mesure</div>
+        <h3 class="ptf-sp-title">Développeur</h3>
+        <p class="ptf-sp-desc">Sites web, applications et solutions digitales — projets en cours d'intégration au portfolio.</p>
+        <div class="ptf-sp-badge">Portfolio en cours de mise en ligne</div>
+      </div>
+    </div>
   </div>
 
 </section>
@@ -2137,6 +2245,17 @@ if($('ptf-lb-bg')) $('ptf-lb-bg').addEventListener('click', closeLb);
 if($('ptf-lb-close')) $('ptf-lb-close').addEventListener('click', closeLb);
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape' && ptfLb && ptfLb.classList.contains('open')) closeLb();
+});
+
+/* ─── PORTFOLIO TABS ─── */
+$$('.ptf-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    $$('.ptf-tab').forEach(t=>{ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    $$('.ptf-panel').forEach(p=>p.classList.add('ptf-panel-hidden'));
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    const panel = document.getElementById('ptf-panel-'+tab.dataset.panel);
+    if(panel) panel.classList.remove('ptf-panel-hidden');
+  });
 });
 
 /* ─── SERVICES TABS ─── */
