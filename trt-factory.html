@@ -773,102 +773,173 @@ p, li { color:var(--text-body); line-height:1.85; }
 #portfolio { background:var(--grey); }
 .ptf-hd { padding:var(--pad-y) var(--pad-x) 56px; }
 .ptf-intro {
-  font-size:14px; line-height:1.8; color:var(--text-dim);
-  max-width:500px; margin-top:14px;
+  font-family:'Barlow',sans-serif;
+  font-size:15px; line-height:1.85; color:var(--text-dim);
+  max-width:540px; margin-top:16px;
 }
 
-/* ── 3 project cards ── */
+/* ── Grille éditoriale 2 colonnes ── */
 .ptf-projects {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:1px; background:rgba(201,168,76,.05);
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:2px; background:rgba(201,168,76,.04);
 }
 .ptf-proj { background:var(--grey); overflow:hidden; }
+/* 3e projet sur toute la largeur */
+.ptf-proj:nth-child(3) { grid-column:1/-1; }
+
 .ptf-proj-img {
-  height:460px; overflow:hidden; position:relative; cursor:pointer;
+  height:540px; overflow:hidden;
+  position:relative; cursor:zoom-in;
 }
+.ptf-proj:nth-child(3) .ptf-proj-img { height:420px; }
+
 .ptf-proj-img img {
   width:100%; height:100%;
   object-fit:cover; object-position:top center;
-  transition:transform .9s cubic-bezier(.16,1,.3,1); display:block;
+  transition:transform 1.2s cubic-bezier(.16,1,.3,1),
+             object-position 14s cubic-bezier(.4,0,.2,1);
+  display:block;
 }
-.ptf-proj:hover .ptf-proj-img img { transform:scale(1.05); }
+.ptf-proj:hover .ptf-proj-img img {
+  transform:scale(1.03);
+  object-position:center center;
+}
+
+/* Dégradé overlay — toujours visible à 70%, plein sur hover */
 .ptf-proj-overlay {
   position:absolute; inset:0;
-  background:linear-gradient(to top,rgba(6,6,8,.9) 0%,rgba(6,6,8,.2) 50%,transparent 100%);
-  display:flex; align-items:flex-end; padding:24px;
-  opacity:0; transition:opacity .4s ease;
+  background:linear-gradient(to top,
+    rgba(6,6,8,.94) 0%, rgba(6,6,8,.3) 38%, transparent 68%);
+  display:flex; flex-direction:column;
+  justify-content:flex-end; padding:28px 32px;
+  opacity:.75; transition:opacity .5s ease;
 }
 .ptf-proj:hover .ptf-proj-overlay { opacity:1; }
-.ptf-proj-tags { display:flex; gap:6px; flex-wrap:wrap; }
+
+.ptf-proj-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
 .ptf-tag {
   font-family:'Syncopate',sans-serif; font-size:7px; font-weight:700;
   letter-spacing:.18em; text-transform:uppercase;
-  color:var(--black); background:var(--gold); padding:5px 9px;
+  color:var(--black); background:var(--gold); padding:5px 10px;
 }
+.ptf-proj-overlay-name {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(26px,2.8vw,42px);
+  letter-spacing:.02em; color:#fff; line-height:1;
+}
+.ptf-proj-overlay-sub {
+  font-family:'Syncopate',sans-serif; font-size:8.5px;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.42); margin-top:5px;
+}
+
+/* Icône agrandir (coin haut-droit) */
+.ptf-proj-expand {
+  position:absolute; top:18px; right:18px;
+  width:38px; height:38px;
+  border:1px solid rgba(201,168,76,.4);
+  background:rgba(6,6,8,.6); backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .4s ease, border-color .3s;
+}
+.ptf-proj:hover .ptf-proj-expand { opacity:1; }
+.ptf-proj-expand svg { pointer-events:none; }
+
+/* Bande info sous l'image */
 .ptf-proj-info {
-  display:flex; align-items:center; gap:20px;
-  padding:22px 28px; border-top:1px solid rgba(201,168,76,.08);
-  position:relative;
+  padding:22px 32px 26px;
+  border-top:1px solid rgba(201,168,76,.07);
+  position:relative; display:flex; flex-direction:column; gap:8px;
 }
 .ptf-proj-info::before {
   content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
   transform:scaleY(0); transform-origin:bottom;
-  transition:transform .5s cubic-bezier(.16,1,.3,1);
+  transition:transform .6s cubic-bezier(.16,1,.3,1);
 }
 .ptf-proj:nth-child(1) .ptf-proj-info::before { background:var(--gold); }
 .ptf-proj:nth-child(2) .ptf-proj-info::before { background:var(--gold-light); }
 .ptf-proj:nth-child(3) .ptf-proj-info::before { background:var(--gold-cold); }
 .ptf-proj:hover .ptf-proj-info::before { transform:scaleY(1); }
+
+.ptf-proj-meta {
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+}
 .ptf-proj-num {
-  font-family:'Bebas Neue',sans-serif; font-size:36px; line-height:1;
-  color:rgba(201,168,76,.18); flex-shrink:0; transition:color .4s;
+  font-family:'Syncopate',sans-serif; font-size:8px; letter-spacing:.4em;
+  text-transform:uppercase; color:rgba(201,168,76,.35);
+  flex-shrink:0; transition:color .4s;
 }
 .ptf-proj:hover .ptf-proj-num { color:var(--gold); }
-.ptf-proj-client {
-  font-family:'Bebas Neue',sans-serif; font-size:24px;
-  letter-spacing:.03em; color:var(--white); line-height:1.1;
-}
 .ptf-proj-type {
-  font-family:'Syncopate',sans-serif; font-size:7px;
-  letter-spacing:.18em; color:var(--text-dim); text-transform:uppercase; margin-top:4px;
+  font-family:'Syncopate',sans-serif; font-size:9px;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim);
+}
+.ptf-proj-desc {
+  font-family:'Barlow',sans-serif; font-size:13.5px; line-height:1.75;
+  color:var(--text-dim); max-width:520px;
 }
 
-/* ── Logos showcase ── */
+/* ── Logos — scroll-to-reveal ── */
 .ptf-logos-sect {
   background:var(--black); padding:72px var(--pad-x);
   border-top:1px solid rgba(201,168,76,.07);
 }
 .ptf-logos-hd {
   display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:48px; flex-wrap:wrap; gap:12px;
+  margin-bottom:40px; flex-wrap:wrap; gap:12px;
 }
 .ptf-logos-count {
   font-family:'Syncopate',sans-serif; font-size:7.5px;
   letter-spacing:.22em; color:var(--text-dim); text-transform:uppercase;
 }
-.ptf-logos-grid img {
-  width:100%; max-width:680px; display:block; margin:0 auto;
-  border:1px solid rgba(201,168,76,.06);
+.ptf-logos-grid {
+  height:600px; overflow:hidden; position:relative;
+  border:1px solid rgba(201,168,76,.07); cursor:pointer;
 }
+.ptf-logos-grid img {
+  width:100%; height:auto; display:block;
+  transition:transform 18s cubic-bezier(.4,0,.2,1);
+}
+.ptf-logos-grid:hover img { transform:translateY(calc(-100% + 600px)); }
+.ptf-logos-hint {
+  position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+  font-family:'Syncopate',sans-serif; font-size:7px; letter-spacing:.3em;
+  text-transform:uppercase; color:rgba(201,168,76,.55);
+  background:rgba(6,6,8,.75); padding:6px 16px; white-space:nowrap;
+  pointer-events:none; transition:opacity .5s ease;
+}
+.ptf-logos-grid:hover .ptf-logos-hint { opacity:0; }
 
-/* ── Visuels strip ── */
+/* ── Visuels — scroll-to-reveal ── */
 .ptf-visuels-sect {
   background:var(--grey-2); padding:72px var(--pad-x);
   border-top:1px solid rgba(201,168,76,.07);
 }
-.ptf-visuels-hd { margin-bottom:40px; }
+.ptf-visuels-hd {
+  margin-bottom:40px; display:flex;
+  justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
 .ptf-visuels-strip {
-  overflow:hidden; height:480px;
+  overflow:hidden; height:640px;
   border:1px solid rgba(201,168,76,.07);
+  cursor:pointer; position:relative;
 }
 .ptf-visuels-strip img {
   width:100%; height:100%;
   object-fit:cover; object-position:top center;
-  transition:object-position 8s ease;
+  transition:object-position 14s cubic-bezier(.4,0,.2,1);
 }
 .ptf-visuels-strip:hover img { object-position:bottom center; }
+.ptf-visuels-hint {
+  position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+  font-family:'Syncopate',sans-serif; font-size:7px; letter-spacing:.3em;
+  text-transform:uppercase; color:rgba(201,168,76,.55);
+  background:rgba(6,6,8,.75); padding:6px 16px; white-space:nowrap;
+  pointer-events:none; transition:opacity .5s ease;
+}
+.ptf-visuels-strip:hover .ptf-visuels-hint { opacity:0; }
 
-/* ── Coming soon note ── */
+/* ── Bientôt ── */
 .ptf-soon {
   display:flex; align-items:center; justify-content:space-between;
   padding:32px var(--pad-x); background:var(--grey);
@@ -879,6 +950,39 @@ p, li { color:var(--text-body); line-height:1.85; }
   text-transform:uppercase; color:var(--text-dim);
 }
 .ptf-soon-txt em { color:var(--gold); font-style:normal; }
+
+/* ── Lightbox ── */
+.ptf-lb {
+  position:fixed; inset:0; z-index:9000;
+  display:flex; align-items:flex-start; justify-content:center;
+  overflow-y:auto; padding:60px 20px 48px;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease;
+  -webkit-overflow-scrolling:touch;
+}
+.ptf-lb.open { opacity:1; pointer-events:all; }
+.ptf-lb-bg {
+  position:fixed; inset:0;
+  background:rgba(6,6,8,.97); cursor:pointer;
+}
+.ptf-lb-close {
+  position:fixed; top:16px; right:20px; z-index:2;
+  width:40px; height:40px; background:var(--grey-2);
+  border:1px solid rgba(201,168,76,.3); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--white); transition:border-color .3s, background .3s;
+}
+.ptf-lb-close:hover { border-color:var(--gold); background:var(--grey-3); }
+.ptf-lb-inner { position:relative; z-index:1; width:min(820px,100%); }
+.ptf-lb-img {
+  width:100%; display:block;
+  box-shadow:0 32px 100px rgba(0,0,0,.8);
+}
+.ptf-lb-caption {
+  font-family:'Syncopate',sans-serif; font-size:7.5px; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--text-dim);
+  margin-top:14px; text-align:center; padding:0 8px;
+}
 
 /* ═══════════════════════════════════════════
    DIFFERENCE
@@ -1027,12 +1131,18 @@ footer {
   .con-right { padding:56px var(--pad-x) var(--pad-y); }
   footer { grid-template-columns:1fr 1fr; }
   .ft-r { text-align:right; grid-column:1/-1; border-top:1px solid var(--grey-3); padding-top:16px; }
-  /* portfolio new */
+  /* portfolio */
   .ptf-projects { grid-template-columns:1fr; }
-  .ptf-proj-img { height:380px; }
-  .ptf-logos-sect { padding:56px var(--pad-x); }
-  .ptf-visuels-strip { height:360px; }
+  .ptf-proj:nth-child(3) { grid-column:auto; }
+  .ptf-proj-img { height:440px; }
+  .ptf-proj:nth-child(3) .ptf-proj-img { height:440px; }
+  .ptf-proj-expand { opacity:1; }
+  .ptf-logos-grid { height:520px; }
+  .ptf-logos-grid:hover img { transform:translateY(calc(-100% + 520px)); }
+  .ptf-visuels-strip { height:480px; }
+  .ptf-logos-sect,.ptf-visuels-sect { padding:56px var(--pad-x); }
   .ptf-soon { flex-direction:column; align-items:flex-start; }
+  .ptf-lb-inner { width:100%; }
 }
 
 /* ═══════════════════════════════════════════
@@ -1081,11 +1191,17 @@ footer {
   .ft-r { grid-column:auto; border-top:none; }
   .mob-nav-link { font-size:clamp(30px,8vw,48px); }
   #theme-toggle { bottom:90px; }
-  /* portfolio new */
-  .ptf-proj-img { height:280px; }
-  .ptf-logos-grid img { max-width:100%; }
-  .ptf-visuels-strip { height:260px; }
-  .ptf-visuels-sect,.ptf-logos-sect { padding:48px var(--pad-x); }
+  /* portfolio */
+  .ptf-proj-img { height:300px; }
+  .ptf-proj:nth-child(3) .ptf-proj-img { height:300px; }
+  .ptf-proj-overlay { padding:20px; }
+  .ptf-proj-info { padding:18px 20px 22px; }
+  .ptf-proj-desc { font-size:13px; }
+  .ptf-logos-grid { height:360px; }
+  .ptf-logos-grid:hover img { transform:translateY(calc(-100% + 360px)); }
+  .ptf-visuels-strip { height:300px; }
+  .ptf-visuels-sect,.ptf-logos-sect { padding:44px var(--pad-x); }
+  .ptf-lb { padding:48px 12px 32px; }
 }
 </style>
 </head>
@@ -1549,14 +1665,17 @@ footer {
   <div class="ptf-hd">
     <div class="sec-lbl rv">Portfolio · Design</div>
     <h2 class="sec-title rv d1">Nos <span class="g">créations.</span></h2>
-    <p class="ptf-intro rv d2">Identités de marque, logos et visuels — réalisés pour des clients au Gabon et en Afrique.</p>
+    <p class="ptf-intro rv d2">Identités de marque, logos et visuels — réalisés pour des clients au Gabon et en Afrique. Survolez pour explorer, cliquez pour agrandir.</p>
   </div>
 
-  <!-- 3 PROJETS BRANDING -->
+  <!-- 3 PROJETS — grille éditoriale 2 col, 3e pleine largeur -->
   <div class="ptf-projects">
 
     <article class="ptf-proj rv">
-      <div class="ptf-proj-img">
+      <div class="ptf-proj-img"
+           data-lb-src="portfolio/biyassi-gn.jpg"
+           data-lb-alt="Biyassi GN — Branding complet"
+           data-lb-caption="Biyassi GN · Logo · Identité visuelle · UI · Social Media">
         <img src="portfolio/biyassi-gn.jpg" alt="Biyassi GN — Branding complet" loading="lazy">
         <div class="ptf-proj-overlay">
           <div class="ptf-proj-tags">
@@ -1564,39 +1683,55 @@ footer {
             <span class="ptf-tag">Branding</span>
             <span class="ptf-tag">Social Media</span>
           </div>
+          <div class="ptf-proj-overlay-name">Biyassi GN</div>
+          <div class="ptf-proj-overlay-sub">Transport & Mobilité · Guinée</div>
+        </div>
+        <div class="ptf-proj-expand" aria-label="Voir en grand">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 1h4v4M13 1L8 6M5 13H1V9M1 13l5-5" stroke="#C9A84C" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
       <div class="ptf-proj-info">
-        <div class="ptf-proj-num">01</div>
-        <div>
-          <div class="ptf-proj-client">Biyassi GN</div>
-          <div class="ptf-proj-type">Logo · Identité · UI · Social Media</div>
+        <div class="ptf-proj-meta">
+          <span class="ptf-proj-num">01 / 03</span>
+          <span class="ptf-proj-type">Identité · UI · Social Media</span>
         </div>
+        <p class="ptf-proj-desc">Identité visuelle complète pour une plateforme de covoiturage en Guinée — logo, déclinaisons print, maquettes UI et templates Social Media.</p>
       </div>
     </article>
 
     <article class="ptf-proj rv d1">
-      <div class="ptf-proj-img">
+      <div class="ptf-proj-img"
+           data-lb-src="portfolio/chic-en-friperie.jpg"
+           data-lb-alt="Chic en Friperie — Branding complet"
+           data-lb-caption="Chic en Friperie · Logo · Identité · Print · Social Media">
         <img src="portfolio/chic-en-friperie.jpg" alt="Chic en Friperie — Branding complet" loading="lazy">
         <div class="ptf-proj-overlay">
           <div class="ptf-proj-tags">
             <span class="ptf-tag">Logo</span>
-            <span class="ptf-tag">Branding</span>
             <span class="ptf-tag">Print</span>
+            <span class="ptf-tag">Social Media</span>
           </div>
+          <div class="ptf-proj-overlay-name">Chic en Friperie</div>
+          <div class="ptf-proj-overlay-sub">Mode & Retail · Libreville</div>
+        </div>
+        <div class="ptf-proj-expand" aria-label="Voir en grand">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 1h4v4M13 1L8 6M5 13H1V9M1 13l5-5" stroke="#C9A84C" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
       <div class="ptf-proj-info">
-        <div class="ptf-proj-num">02</div>
-        <div>
-          <div class="ptf-proj-client">Chic en Friperie</div>
-          <div class="ptf-proj-type">Logo · Identité · Print · Social Media</div>
+        <div class="ptf-proj-meta">
+          <span class="ptf-proj-num">02 / 03</span>
+          <span class="ptf-proj-type">Logo · Print · Social Media</span>
         </div>
+        <p class="ptf-proj-desc">Identité élégante pour une boutique friperie à Libreville — logo cintre signature, charte beige & noir, templates print et Social Media.</p>
       </div>
     </article>
 
     <article class="ptf-proj rv d2">
-      <div class="ptf-proj-img">
+      <div class="ptf-proj-img"
+           data-lb-src="portfolio/como-n-casa.jpg"
+           data-lb-alt="Como N'Casa — Branding complet"
+           data-lb-caption="Como N'Casa · Logo · Identité · Social Media · Mexican Vibes">
         <img src="portfolio/como-n-casa.jpg" alt="Como N'Casa — Branding complet" loading="lazy">
         <div class="ptf-proj-overlay">
           <div class="ptf-proj-tags">
@@ -1604,14 +1739,19 @@ footer {
             <span class="ptf-tag">Branding</span>
             <span class="ptf-tag">Social Media</span>
           </div>
+          <div class="ptf-proj-overlay-name">Como N'Casa</div>
+          <div class="ptf-proj-overlay-sub">Food & Restauration · Mexican Vibes</div>
+        </div>
+        <div class="ptf-proj-expand" aria-label="Voir en grand">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 1h4v4M13 1L8 6M5 13H1V9M1 13l5-5" stroke="#C9A84C" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
       <div class="ptf-proj-info">
-        <div class="ptf-proj-num">03</div>
-        <div>
-          <div class="ptf-proj-client">Como N'Casa</div>
-          <div class="ptf-proj-type">Logo · Identité · Social Media</div>
+        <div class="ptf-proj-meta">
+          <span class="ptf-proj-num">03 / 03</span>
+          <span class="ptf-proj-type">Logo · Identité · Social Media</span>
         </div>
+        <p class="ptf-proj-desc">Identité mexicaine vibrante — logo géométrique, typographie dynamique, déclinaisons print et templates Social Media "Mexican Vibes, Home Feeling".</p>
       </div>
     </article>
 
@@ -1624,7 +1764,8 @@ footer {
       <span class="ptf-logos-count">10+ marques · Gabon · Afrique · International</span>
     </div>
     <div class="ptf-logos-grid">
-      <img src="portfolio/logos-grid.jpg" alt="Grille de logos réalisés — AEGM, Munchies, Biyassi, Chic en Friperie, Como N'Casa, NH Electronics, Oushombe, TRT Factory, NH Express, Gourmet Factory" loading="lazy">
+      <img src="portfolio/logos-grid.jpg" alt="Grille de logos — AEGM, Munchies, Biyassi, Chic en Friperie, Como N'Casa, NH Electronics, Oushombe, TRT Factory, NH Express, Gourmet Factory" loading="lazy">
+      <span class="ptf-logos-hint">Survoler pour découvrir</span>
     </div>
   </div>
 
@@ -1632,9 +1773,11 @@ footer {
   <div class="ptf-visuels-sect rv">
     <div class="ptf-visuels-hd">
       <div class="sec-lbl">Visuels & Social Media</div>
+      <span class="ptf-logos-count">Posts · Affiches · Identités visuelles</span>
     </div>
     <div class="ptf-visuels-strip">
       <img src="portfolio/visuels.jpg" alt="Visuels et posts social media" loading="lazy">
+      <span class="ptf-visuels-hint">Survoler pour découvrir</span>
     </div>
   </div>
 
@@ -1646,7 +1789,6 @@ footer {
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.2"/></svg>
     </a>
   </div>
-
 
 </section>
 
@@ -1766,6 +1908,18 @@ footer {
 </section>
 
 </div><!-- /wrap -->
+
+<!-- PORTFOLIO LIGHTBOX -->
+<div id="ptf-lb" class="ptf-lb" aria-hidden="true" aria-label="Aperçu du projet">
+  <div class="ptf-lb-bg" id="ptf-lb-bg"></div>
+  <button class="ptf-lb-close" id="ptf-lb-close" aria-label="Fermer">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5"/></svg>
+  </button>
+  <div class="ptf-lb-inner">
+    <img class="ptf-lb-img" id="ptf-lb-img" src="" alt="">
+    <p class="ptf-lb-caption" id="ptf-lb-caption"></p>
+  </div>
+</div>
 
 <!-- QUOTE MODAL -->
 <div id="quote-modal" role="dialog" aria-modal="true" aria-labelledby="qm-title-txt">
@@ -1958,6 +2112,36 @@ if(form){
     }, 3500);
   });
 }
+
+/* ─── PORTFOLIO LIGHTBOX ─── */
+const ptfLb    = $('ptf-lb');
+const ptfLbImg = $('ptf-lb-img');
+const ptfLbCap = $('ptf-lb-caption');
+
+function openLb(src, alt, caption){
+  ptfLbImg.src = src;
+  ptfLbImg.alt = alt || '';
+  ptfLbCap.textContent = caption || '';
+  ptfLb.classList.add('open');
+  ptfLb.setAttribute('aria-hidden','false');
+  ptfLb.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function closeLb(){
+  ptfLb.classList.remove('open');
+  ptfLb.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+$$('.ptf-proj-img').forEach(el=>{
+  el.addEventListener('click',()=>{
+    openLb(el.dataset.lbSrc, el.dataset.lbAlt, el.dataset.lbCaption);
+  });
+});
+if($('ptf-lb-bg')) $('ptf-lb-bg').addEventListener('click', closeLb);
+if($('ptf-lb-close')) $('ptf-lb-close').addEventListener('click', closeLb);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape' && ptfLb && ptfLb.classList.contains('open')) closeLb();
+});
 
 /* ─── SERVICES TABS ─── */
 $$('.svc-tab').forEach(tab=>{
