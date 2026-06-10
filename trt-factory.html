@@ -1344,6 +1344,169 @@ footer {
   .ptf-dev-proj-overlay { opacity:1; }
   .ptf-lb { padding:48px 12px 32px; }
 }
+
+/* ═══════════════════════════════════════════
+   BLUFFANT EXTRAORDINAIRE — STYLE OVERHAUL
+═══════════════════════════════════════════ */
+
+/* Sélection de texte */
+::selection { background:rgba(201,168,76,.22); color:var(--gold-light); }
+
+/* Tokens de lueur */
+:root {
+  --glow-xs: 0 0 20px rgba(201,168,76,.22);
+  --glow-sm: 0 0 35px rgba(201,168,76,.3), 0 0 70px rgba(201,168,76,.1);
+  --glow-lg: 0 0 60px rgba(201,168,76,.42), 0 0 140px rgba(201,168,76,.13);
+}
+
+/* Barre de progression — lumineuse */
+#prog-f {
+  background:linear-gradient(to bottom, var(--gold-light), var(--gold));
+  box-shadow:0 0 10px rgba(201,168,76,.55), 0 0 28px rgba(201,168,76,.2);
+}
+
+/* Dot nav latérale — pulsation dorée */
+.sb-dot.on::before { animation:dotPulse 3s ease-in-out infinite; }
+@keyframes dotPulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(201,168,76,.55); }
+  60%      { box-shadow:0 0 0 7px rgba(201,168,76,0); }
+}
+
+/* ── HERO : lueur ambiante + glows titres ── */
+#hero {
+  background:
+    radial-gradient(ellipse 65% 50% at 18% 88%, rgba(201,168,76,.06) 0%, transparent 65%),
+    var(--bg-main);
+}
+.h-title .g { text-shadow:var(--glow-sm); }
+.h-title .o { -webkit-text-stroke:1px rgba(136,134,144,.38); }
+
+/* Bouton principal — shimmer traversant */
+.btn-main { position:relative; overflow:hidden; }
+.btn-main::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 25%, rgba(255,255,255,.15) 50%, transparent 75%);
+  transform:translateX(-120%); transition:transform .7s ease; pointer-events:none;
+}
+.btn-main:hover::after { transform:translateX(120%); }
+
+/* ── TICKER : fondu sur les bords ── */
+#ticker {
+  -webkit-mask-image:linear-gradient(90deg, transparent, black 7%, black 93%, transparent);
+  mask-image:linear-gradient(90deg, transparent, black 7%, black 93%, transparent);
+}
+
+/* ── ABOUT : citation enrichie ── */
+.a-quote {
+  border-left-width:3px;
+  background:linear-gradient(135deg, rgba(201,168,76,.045) 0%, transparent 100%);
+  padding:28px 0 28px 30px;
+}
+.a-tri-item:hover .a-tri-disc { text-shadow:0 0 26px currentColor; }
+
+/* ── ÉQUIPE : hover amélioré ── */
+.tm-sep { transition:width .5s ease, background .5s; }
+.tm-card:hover .tm-sep { width:56px; background:rgba(201,168,76,.55); }
+.tm-card { transition:background .5s, box-shadow .5s; }
+.tm-card:hover { box-shadow:0 24px 80px rgba(0,0,0,.32); }
+
+/* ── PROCESSUS : lueur sur les numéros ── */
+.proc-tl::before { opacity:.28; }
+.step:hover .step-n { text-shadow:var(--glow-xs); }
+
+/* ── STATS : gradient premium + overlay lumière ── */
+#stats { background:linear-gradient(135deg, #BF9422 0%, #D4A53A 35%, #C9A84C 65%, #B89030 100%); }
+.stat-n { text-shadow:0 2px 20px rgba(0,0,0,.2); }
+#stats::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(255,255,255,.07) 0%, transparent 50%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── SERVICES : card hover + recommandé + shimmer ── */
+.pkg-card { transition:background .5s, box-shadow .5s; }
+.pkg-card:hover { box-shadow:0 12px 60px rgba(0,0,0,.28); }
+.pkg-card:nth-child(2) {
+  border-top:2px solid rgba(201,168,76,.38);
+  background:rgba(201,168,76,.018);
+}
+.pkg-cta { position:relative; overflow:hidden; }
+.pkg-cta::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 25%, rgba(255,255,255,.13) 50%, transparent 75%);
+  transform:translateX(-120%); transition:transform .7s ease; pointer-events:none;
+}
+.pkg-cta:hover::after { transform:translateX(120%); }
+
+/* ── PORTFOLIO : indicateur onglet lumineux ── */
+.ptf-tab.active::after { box-shadow:0 0 10px rgba(201,168,76,.55); }
+
+/* ── DIFFÉRENCE : ambiance + ∞ pulsant ── */
+#difference {
+  background:
+    radial-gradient(ellipse 55% 70% at 80% 50%, rgba(201,168,76,.025) 0%, transparent 60%),
+    var(--bg-section);
+}
+.diff-s-gold { text-shadow:var(--glow-lg); animation:goldPulse 5s ease-in-out infinite; }
+@keyframes goldPulse {
+  0%,100% { text-shadow:var(--glow-lg); }
+  50%      { text-shadow:0 0 80px rgba(201,168,76,.58), 0 0 200px rgba(201,168,76,.2); }
+}
+.diff-s-outline { -webkit-text-stroke:1px rgba(201,168,76,.32); }
+.diff-dot { transition:box-shadow .3s, transform .3s; }
+.diff-item:hover .diff-dot { box-shadow:0 0 14px rgba(201,168,76,.85); transform:scale(1.5); }
+
+/* ── CONTACT : ambiance + focus ── */
+#contact {
+  background:
+    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(201,168,76,.035) 0%, transparent 55%),
+    var(--bg-main);
+}
+.f-in:focus, .f-sel:focus, .f-ta:focus {
+  box-shadow:0 0 0 1px rgba(201,168,76,.22), 0 0 22px rgba(201,168,76,.07);
+}
+.con-big .g { text-shadow:var(--glow-xs); }
+.btn-send { position:relative; overflow:hidden; }
+.btn-send::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 25%, rgba(255,255,255,.14) 50%, transparent 75%);
+  transform:translateX(-120%); transition:transform .7s ease; pointer-events:none;
+}
+.btn-send:hover::after { transform:translateX(120%); }
+
+/* ── FOOTER : liseré doré + gradient subtil ── */
+footer {
+  border-top:1px solid rgba(201,168,76,.2);
+  background:
+    linear-gradient(to bottom, rgba(201,168,76,.016) 0%, transparent 50%),
+    var(--bg-section);
+}
+
+/* ── GLOBAL : titres dorés + scrollbar ── */
+.sec-title .g { text-shadow:var(--glow-xs); }
+::-webkit-scrollbar-thumb { background:linear-gradient(to bottom, var(--gold-light), var(--gold)); }
+
+/* FAB devis — shimmer */
+#devis-fab { position:relative; overflow:hidden; }
+#devis-fab::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 25%, rgba(255,255,255,.12) 50%, transparent 75%);
+  transform:translateX(-120%); transition:transform .7s ease; pointer-events:none;
+}
+#devis-fab:hover::after { transform:translateX(120%); }
+
+/* Lightbox backdrop amélioré */
+.ptf-lb-bg { backdrop-filter:blur(10px); }
+
+/* Dev projects — image placeholder */
+.ptf-dev-proj-img img { background:var(--grey-3); }
+
+/* Réduit les mouvements si préféré */
+@media(prefers-reduced-motion:reduce) {
+  .sb-dot.on::before,
+  .diff-s-gold { animation:none; }
+  .btn-main::after, .pkg-cta::after, .btn-send::after, #devis-fab::after { display:none; }
+}
 </style>
 </head>
 <body>
@@ -2529,6 +2692,24 @@ devisFab.addEventListener('click',openQModal);
 $('qm-close').addEventListener('click',closeQModal);
 $('qm-backdrop').addEventListener('click',closeQModal);
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&quoteModal.classList.contains('open')) closeQModal(); });
+
+/* ─── HERO PARALLAX ─── */
+(function(){
+  const hWm   = document.querySelector('.h-wm');
+  const hLogo = document.querySelector('.h-logo-giant');
+  let ticking = false;
+  function doParallax(){
+    const s = window.scrollY, h = window.innerHeight;
+    if(s < h * 1.5){
+      if(hWm)   hWm.style.transform   = `translate(-50%, calc(-50% + ${s * .12}px))`;
+      if(hLogo) hLogo.style.transform = `translateY(${s * .07}px)`;
+    }
+    ticking = false;
+  }
+  window.addEventListener('scroll', ()=>{
+    if(!ticking){ requestAnimationFrame(doParallax); ticking = true; }
+  }, {passive:true});
+})();
 
 if(qmForm){
   qmForm.addEventListener('submit',e=>{
