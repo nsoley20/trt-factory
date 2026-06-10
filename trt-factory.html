@@ -978,41 +978,59 @@ p, li { color:var(--text-body); line-height:1.85; }
   display:grid; grid-template-columns:repeat(2,1fr);
   gap:1px; background:var(--grey-3);
 }
-.ptf-dev-proj {
-  background:var(--grey); padding:40px 44px 36px;
-  display:flex; flex-direction:column; gap:14px;
-  transition:background .25s ease; position:relative; overflow:hidden;
+.ptf-dev-proj { background:var(--grey); overflow:hidden; }
+.ptf-dev-proj-img {
+  display:block; height:260px; overflow:hidden; position:relative;
+  text-decoration:none;
 }
-.ptf-dev-proj::before {
+.ptf-dev-proj-img img {
+  width:100%; height:100%; object-fit:cover; object-position:top center;
+  transition:transform .7s ease;
+}
+.ptf-dev-proj:hover .ptf-dev-proj-img img { transform:scale(1.04); }
+.ptf-dev-proj-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top,rgba(6,6,8,.9) 0%,transparent 55%);
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:18px 22px; opacity:0; transition:opacity .3s ease;
+}
+.ptf-dev-proj:hover .ptf-dev-proj-overlay { opacity:1; }
+.ptf-dev-proj-overlay-name {
+  font-family:'Bebas Neue',sans-serif; font-size:20px;
+  color:var(--white); letter-spacing:.04em;
+}
+.ptf-dev-ext-icon {
+  position:absolute; top:12px; right:12px;
+  width:34px; height:34px; border:1px solid rgba(201,168,76,.5);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  color:var(--gold); opacity:0; transition:opacity .3s ease;
+  background:rgba(6,6,8,.7);
+}
+.ptf-dev-proj:hover .ptf-dev-ext-icon { opacity:1; }
+.ptf-dev-proj-info {
+  padding:20px 24px 24px; position:relative;
+}
+.ptf-dev-proj-info::before {
   content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
   background:var(--gold); transform:scaleY(0); transform-origin:bottom;
   transition:transform .3s ease;
 }
-.ptf-dev-proj:hover { background:var(--grey-2); }
-.ptf-dev-proj:hover::before { transform:scaleY(1); }
+.ptf-dev-proj:hover .ptf-dev-proj-info::before { transform:scaleY(1); }
+.ptf-dev-proj-meta {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;
+}
 .ptf-dev-proj-num {
   font-family:'Syncopate',sans-serif; font-size:8px;
   letter-spacing:.35em; color:var(--gold); text-transform:uppercase;
 }
 .ptf-dev-proj-name {
-  font-family:'Bebas Neue',sans-serif; font-size:clamp(38px,3.5vw,56px);
-  line-height:.92; color:var(--white); letter-spacing:.01em;
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(26px,2.6vw,38px);
+  line-height:.95; color:var(--white); letter-spacing:.01em; margin-bottom:7px;
 }
 .ptf-dev-proj-desc {
-  font-family:'Barlow',sans-serif; font-size:14px; line-height:1.75;
-  color:var(--text-body); flex:1;
+  font-family:'Barlow',sans-serif; font-size:13px; line-height:1.7;
+  color:var(--text-body); margin-bottom:12px;
 }
-.ptf-dev-proj-footer {
-  display:flex; align-items:flex-end; justify-content:space-between;
-  gap:16px; flex-wrap:wrap; margin-top:6px;
-}
-.ptf-dev-proj-link {
-  width:36px; height:36px; border:1px solid var(--grey-3);
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  color:var(--gold); text-decoration:none; flex-shrink:0;
-  transition:border-color .2s, background .2s;
-}
-.ptf-dev-proj-link:hover { border-color:var(--gold); background:rgba(201,168,76,.1); }
 
 /* ── Portfolio Bientôt Panel ── */
 .ptf-soon-panel {
@@ -1255,7 +1273,7 @@ footer {
   .ptf-tab::after { left:20px; right:20px; }
   .ptf-soon-panel { min-height:400px; }
   .ptf-dev-projects { grid-template-columns:1fr; }
-  .ptf-dev-proj { padding:32px var(--pad-x) 28px; }
+  .ptf-dev-proj-img { height:220px; }
   .ptf-lb-inner { width:100%; }
 }
 
@@ -1321,8 +1339,9 @@ footer {
   .ptf-tab-badge { display:none; }
   .ptf-soon-panel { min-height:320px; padding:var(--pad-y) var(--pad-x); }
   .ptf-sp-tag::before,.ptf-sp-tag::after { width:20px; }
-  .ptf-dev-proj { padding:28px var(--pad-x) 24px; }
-  .ptf-dev-proj-name { font-size:40px; }
+  .ptf-dev-proj-img { height:180px; }
+  .ptf-dev-ext-icon { opacity:1; }
+  .ptf-dev-proj-overlay { opacity:1; }
   .ptf-lb { padding:48px 12px 32px; }
 }
 </style>
@@ -1932,100 +1951,104 @@ footer {
     <div class="ptf-dev-projects">
 
       <article class="ptf-dev-proj rv">
-        <span class="ptf-dev-proj-num">01 / 06</span>
-        <h3 class="ptf-dev-proj-name">Bamboo</h3>
-        <p class="ptf-dev-proj-desc">Application complète de gestion RH pour SFE — dashboard analytics, CRUD employés, suivi des présences.</p>
-        <div class="ptf-dev-proj-footer">
-          <div class="ptf-proj-tags">
-            <span class="ptf-tag">Node.js</span>
-            <span class="ptf-tag">Express</span>
-            <span class="ptf-tag">MongoDB</span>
-            <span class="ptf-tag">Chart.js</span>
+        <a class="ptf-dev-proj-img" href="https://nsoleyportfolio.vercel.app/bamboo-landing.html" target="_blank" rel="noopener" aria-label="Voir Bamboo">
+          <img src="https://image.thum.io/get/width/800/https://nsoleyportfolio.vercel.app/bamboo-landing.html" alt="Bamboo — Gestion RH" loading="lazy">
+          <div class="ptf-dev-proj-overlay"><span class="ptf-dev-proj-overlay-name">Voir le site</span></div>
+          <div class="ptf-dev-ext-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <div class="ptf-dev-proj-info">
+          <div class="ptf-dev-proj-meta">
+            <span class="ptf-dev-proj-num">01 / 06</span>
+            <span class="ptf-proj-type">RH · Dashboard · SaaS</span>
           </div>
-          <a href="https://nsoleyportfolio.vercel.app/bamboo-landing.html" target="_blank" rel="noopener" class="ptf-dev-proj-link" aria-label="Voir Bamboo">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <h3 class="ptf-dev-proj-name">Bamboo</h3>
+          <p class="ptf-dev-proj-desc">Application de gestion RH — dashboard analytics, CRUD employés, suivi des présences.</p>
+          <div class="ptf-proj-tags"><span class="ptf-tag">Node.js</span><span class="ptf-tag">Express</span><span class="ptf-tag">MongoDB</span><span class="ptf-tag">Chart.js</span></div>
         </div>
       </article>
 
       <article class="ptf-dev-proj rv d1">
-        <span class="ptf-dev-proj-num">02 / 06</span>
-        <h3 class="ptf-dev-proj-name">Linafp</h3>
-        <p class="ptf-dev-proj-desc">Billetterie pour la Ligue Nationale de Football du Gabon — calendrier, achat en ligne et tickets numériques QR Code.</p>
-        <div class="ptf-dev-proj-footer">
-          <div class="ptf-proj-tags">
-            <span class="ptf-tag">HTML5</span>
-            <span class="ptf-tag">CSS3</span>
-            <span class="ptf-tag">JavaScript</span>
-            <span class="ptf-tag">Node.js</span>
+        <a class="ptf-dev-proj-img" href="https://linaf-billetterie.vercel.app/" target="_blank" rel="noopener" aria-label="Voir Linafp">
+          <img src="https://image.thum.io/get/width/800/https://linaf-billetterie.vercel.app/" alt="Linafp — Billetterie football" loading="lazy">
+          <div class="ptf-dev-proj-overlay"><span class="ptf-dev-proj-overlay-name">Voir le site</span></div>
+          <div class="ptf-dev-ext-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <div class="ptf-dev-proj-info">
+          <div class="ptf-dev-proj-meta">
+            <span class="ptf-dev-proj-num">02 / 06</span>
+            <span class="ptf-proj-type">Sport · Billetterie · QR Code</span>
           </div>
-          <a href="https://linaf-billetterie.vercel.app/" target="_blank" rel="noopener" class="ptf-dev-proj-link" aria-label="Voir Linafp">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <h3 class="ptf-dev-proj-name">Linafp</h3>
+          <p class="ptf-dev-proj-desc">Billetterie officielle de la Ligue Nationale de Football du Gabon — achat en ligne, tickets QR Code.</p>
+          <div class="ptf-proj-tags"><span class="ptf-tag">HTML5</span><span class="ptf-tag">CSS3</span><span class="ptf-tag">JavaScript</span><span class="ptf-tag">Node.js</span></div>
         </div>
       </article>
 
       <article class="ptf-dev-proj rv d2">
-        <span class="ptf-dev-proj-num">03 / 06</span>
-        <h3 class="ptf-dev-proj-name">Otaku</h3>
-        <p class="ptf-dev-proj-desc">Catalogue d'animes avec moteur de recherche, favoris, fiches détaillées et interface inspirée de l'esthétique japonaise.</p>
-        <div class="ptf-dev-proj-footer">
-          <div class="ptf-proj-tags">
-            <span class="ptf-tag">JavaScript</span>
-            <span class="ptf-tag">API REST</span>
-            <span class="ptf-tag">CSS3</span>
+        <a class="ptf-dev-proj-img" href="https://site-otaku.vercel.app/" target="_blank" rel="noopener" aria-label="Voir Otaku">
+          <img src="https://image.thum.io/get/width/800/https://site-otaku.vercel.app/" alt="Otaku — Catalogue animes" loading="lazy">
+          <div class="ptf-dev-proj-overlay"><span class="ptf-dev-proj-overlay-name">Voir le site</span></div>
+          <div class="ptf-dev-ext-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <div class="ptf-dev-proj-info">
+          <div class="ptf-dev-proj-meta">
+            <span class="ptf-dev-proj-num">03 / 06</span>
+            <span class="ptf-proj-type">Catalogue · API REST</span>
           </div>
-          <a href="https://site-otaku.vercel.app/" target="_blank" rel="noopener" class="ptf-dev-proj-link" aria-label="Voir Otaku">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <h3 class="ptf-dev-proj-name">Otaku</h3>
+          <p class="ptf-dev-proj-desc">Catalogue d'animes avec moteur de recherche, favoris et fiches détaillées — esthétique japonaise.</p>
+          <div class="ptf-proj-tags"><span class="ptf-tag">JavaScript</span><span class="ptf-tag">API REST</span><span class="ptf-tag">CSS3</span></div>
         </div>
       </article>
 
       <article class="ptf-dev-proj rv d3">
-        <span class="ptf-dev-proj-num">04 / 06</span>
-        <h3 class="ptf-dev-proj-name">Tsunami Aquapark</h3>
-        <p class="ptf-dev-proj-desc">Site vitrine de l'aquapark de Libreville — toboggans, bassins, espace enfants, restauration et événements.</p>
-        <div class="ptf-dev-proj-footer">
-          <div class="ptf-proj-tags">
-            <span class="ptf-tag">HTML</span>
-            <span class="ptf-tag">Tailwind CSS</span>
-            <span class="ptf-tag">JavaScript</span>
+        <a class="ptf-dev-proj-img" href="https://tsunami-aquapark-istb.vercel.app/" target="_blank" rel="noopener" aria-label="Voir Tsunami Aquapark">
+          <img src="https://image.thum.io/get/width/800/https://tsunami-aquapark-istb.vercel.app/" alt="Tsunami Aquapark" loading="lazy">
+          <div class="ptf-dev-proj-overlay"><span class="ptf-dev-proj-overlay-name">Voir le site</span></div>
+          <div class="ptf-dev-ext-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <div class="ptf-dev-proj-info">
+          <div class="ptf-dev-proj-meta">
+            <span class="ptf-dev-proj-num">04 / 06</span>
+            <span class="ptf-proj-type">Vitrine · Loisirs · Libreville</span>
           </div>
-          <a href="https://tsunami-aquapark-istb.vercel.app/" target="_blank" rel="noopener" class="ptf-dev-proj-link" aria-label="Voir Tsunami Aquapark">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <h3 class="ptf-dev-proj-name">Tsunami Aquapark</h3>
+          <p class="ptf-dev-proj-desc">Site vitrine de l'aquapark de Libreville — toboggans, bassins, restauration et événements.</p>
+          <div class="ptf-proj-tags"><span class="ptf-tag">HTML</span><span class="ptf-tag">Tailwind CSS</span><span class="ptf-tag">JavaScript</span></div>
         </div>
       </article>
 
       <article class="ptf-dev-proj rv">
-        <span class="ptf-dev-proj-num">05 / 06</span>
-        <h3 class="ptf-dev-proj-name">Wa Ngan</h3>
-        <p class="ptf-dev-proj-desc">Plateforme de vlogging 100% gabonaise — profils, vlogs, communauté et panneau d'administration complet.</p>
-        <div class="ptf-dev-proj-footer">
-          <div class="ptf-proj-tags">
-            <span class="ptf-tag">HTML5</span>
-            <span class="ptf-tag">CSS3</span>
-            <span class="ptf-tag">JavaScript</span>
+        <a class="ptf-dev-proj-img" href="https://wa-ngan.vercel.app/" target="_blank" rel="noopener" aria-label="Voir Wa Ngan">
+          <img src="https://image.thum.io/get/width/800/https://wa-ngan.vercel.app/" alt="Wa Ngan — Vlogging gabonais" loading="lazy">
+          <div class="ptf-dev-proj-overlay"><span class="ptf-dev-proj-overlay-name">Voir le site</span></div>
+          <div class="ptf-dev-ext-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <div class="ptf-dev-proj-info">
+          <div class="ptf-dev-proj-meta">
+            <span class="ptf-dev-proj-num">05 / 06</span>
+            <span class="ptf-proj-type">Plateforme · Social · Gabon</span>
           </div>
-          <a href="https://wa-ngan.vercel.app/" target="_blank" rel="noopener" class="ptf-dev-proj-link" aria-label="Voir Wa Ngan">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <h3 class="ptf-dev-proj-name">Wa Ngan</h3>
+          <p class="ptf-dev-proj-desc">Plateforme de vlogging 100% gabonaise — profils, vlogs, communauté et panneau d'administration.</p>
+          <div class="ptf-proj-tags"><span class="ptf-tag">HTML5</span><span class="ptf-tag">CSS3</span><span class="ptf-tag">JavaScript</span></div>
         </div>
       </article>
 
       <article class="ptf-dev-proj rv d1">
-        <span class="ptf-dev-proj-num">06 / 06</span>
-        <h3 class="ptf-dev-proj-name">Gaki Group</h3>
-        <p class="ptf-dev-proj-desc">Site vitrine corporate pour holding stratégique basé à Dakar avec 7 filiales spécialisées.</p>
-        <div class="ptf-dev-proj-footer">
-          <div class="ptf-proj-tags">
-            <span class="ptf-tag">HTML5</span>
-            <span class="ptf-tag">CSS3</span>
-            <span class="ptf-tag">Responsive</span>
+        <a class="ptf-dev-proj-img" href="https://gaki-group-landing.vercel.app/" target="_blank" rel="noopener" aria-label="Voir Gaki Group">
+          <img src="https://image.thum.io/get/width/800/https://gaki-group-landing.vercel.app/" alt="Gaki Group — Corporate Dakar" loading="lazy">
+          <div class="ptf-dev-proj-overlay"><span class="ptf-dev-proj-overlay-name">Voir le site</span></div>
+          <div class="ptf-dev-ext-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <div class="ptf-dev-proj-info">
+          <div class="ptf-dev-proj-meta">
+            <span class="ptf-dev-proj-num">06 / 06</span>
+            <span class="ptf-proj-type">Corporate · Holding · Dakar</span>
           </div>
-          <a href="https://gaki-group-landing.vercel.app/" target="_blank" rel="noopener" class="ptf-dev-proj-link" aria-label="Voir Gaki Group">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <h3 class="ptf-dev-proj-name">Gaki Group</h3>
+          <p class="ptf-dev-proj-desc">Site vitrine corporate pour holding stratégique basé à Dakar avec 7 filiales spécialisées.</p>
+          <div class="ptf-proj-tags"><span class="ptf-tag">HTML5</span><span class="ptf-tag">CSS3</span><span class="ptf-tag">Responsive</span></div>
         </div>
       </article>
 
