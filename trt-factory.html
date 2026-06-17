@@ -267,15 +267,15 @@ section[id], div[id] { scroll-margin-top:0; }
 p, li { color:var(--text-body); line-height:1.85; }
 
 .btn-main {
-  font-family:'Space Mono',monospace; font-size:9px; font-weight:700;
-  letter-spacing:.3em; text-transform:uppercase;
+  font-family:'Space Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:.25em; text-transform:uppercase;
   color:var(--bg-main); background:var(--gold);
-  padding:16px 32px; text-decoration:none;
-  display:inline-flex; align-items:center; gap:12px;
-  clip-path:polygon(0 0,100% 0,95% 100%,0 100%);
-  transition:background .3s,transform .2s,clip-path .3s; white-space:nowrap;
+  padding:18px 30px; text-decoration:none; border:1px solid var(--gold);
+  display:inline-flex; align-items:center; gap:14px;
+  transition:background .25s,color .25s; white-space:nowrap;
 }
-.btn-main:hover { background:var(--gold-light); transform:translateX(3px); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); }
+.btn-main:hover { background:transparent; color:var(--gold); }
+.btn-main:hover svg path { stroke:var(--gold); }
 
 .btn-ghost {
   font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.3em;
@@ -290,79 +290,49 @@ p, li { color:var(--text-body); line-height:1.85; }
    HERO
 ═══════════════════════════════════════════ */
 #hero {
-  min-height:100vh; display:grid;
-  grid-template-columns:1fr;
+  min-height:100vh; display:flex; flex-direction:column; justify-content:space-between;
   background:var(--bg-main); position:relative;
+  padding:calc(var(--mh) + 96px) var(--pad-x) 44px;
 }
-.h-left {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:flex-end;
-  overflow:hidden; pointer-events:none;
+/* ── Bande de méta supérieure ── */
+.h-top {
+  display:grid; grid-template-columns:repeat(12,1fr); gap:var(--col-gap);
+  align-items:start; padding-bottom:20px;
+  border-bottom:var(--rule) solid var(--border-grey);
 }
-.h-wm {
-  position:absolute; font-family:'Archivo',sans-serif;
-  font-size:clamp(200px,50vw,55vw);
-  color:rgba(201,168,76,.03); top:50%; left:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none; user-select:none; line-height:1;
-}
-.h-logo-giant img {
-  width:clamp(380px,44vw,680px); height:auto; object-fit:contain;
-  opacity:0.06;
-  animation:breathe 7s ease-in-out infinite;
-}
-@keyframes breathe {
-  0%,100% { opacity:0.05; }
-  50%      { opacity:0.11; }
-}
-.h-left::before { display:none; }
-.h-right {
-  display:flex; flex-direction:column; justify-content:flex-end;
-  padding:var(--pad-y) var(--pad-x) 100px;
-  position:relative; z-index:1; overflow:hidden;
-}
-.h-corner {
-  position:absolute; top:28px; right:28px;
-  font-family:'Space Mono',monospace; font-size:8px;
-  letter-spacing:.3em; color:var(--text-label); text-transform:uppercase;
-  writing-mode:vertical-rl; user-select:none;
-}
+.h-top-id { grid-column:1 / 4; display:flex; align-items:baseline; gap:14px; }
+.h-top-name { grid-column:4 / 9; }
+.h-top-loc  { grid-column:10 / 13; text-align:right; line-height:1.9; }
+
+/* ── Bloc titre central ── */
+.h-main { flex:1; display:flex; flex-direction:column; justify-content:center; padding:48px 0; }
 .h-eye {
-  font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.45em;
+  font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.4em;
   text-transform:uppercase; color:var(--gold);
-  display:flex; align-items:center; gap:14px; margin-bottom:20px;
+  display:flex; align-items:center; gap:16px; margin-bottom:34px;
 }
-.h-eye::before { content:''; width:28px; height:1px; background:var(--gold); flex-shrink:0; }
+.h-eye::before { content:''; width:48px; height:1px; background:var(--gold); flex-shrink:0; }
 .h-title {
-  font-family:'Archivo',sans-serif;
-  font-size:clamp(72px,9.5vw,156px); line-height:.88; letter-spacing:.01em; margin-bottom:6px;
+  font-family:'Archivo',sans-serif; font-weight:900;
+  font-size:clamp(56px,12.5vw,210px); line-height:.85; letter-spacing:-.04em;
+  text-transform:uppercase;
 }
+.h-title span { display:block; }
 .h-title .g { color:var(--gold); }
-.h-title .o { color:transparent; -webkit-text-stroke:1px var(--text-dim); }
-.h-sub {
-  font-family:'Archivo',sans-serif;
-  font-size:clamp(20px,2.2vw,36px); letter-spacing:.12em;
-  color:var(--text-dim); margin-bottom:36px;
+.h-title .o { color:transparent; -webkit-text-stroke:1.5px var(--text-dim); }
+
+/* ── Bande inférieure : description + CTA ── */
+.h-bottom {
+  display:grid; grid-template-columns:repeat(12,1fr); gap:var(--col-gap);
+  align-items:end; padding-top:24px;
+  border-top:var(--rule) solid var(--border-grey);
 }
-.h-sep { width:100%; height:1px; background:var(--grey-3); margin-bottom:28px; }
 .h-desc {
-  font-size:15px; line-height:1.9; color:var(--text-body);
-  max-width:580px; margin-bottom:48px;
+  grid-column:1 / 7; margin:0;
+  font-size:15px; line-height:1.7; color:var(--text-body);
 }
-.h-desc strong { color:var(--white); font-weight:600; }
-.h-cta { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
-.h-scroll {
-  position:absolute; bottom:36px; left:var(--pad-x);
-  display:flex; align-items:center; gap:14px;
-  font-family:'Space Mono',monospace; font-size:8px;
-  letter-spacing:.35em; color:var(--text-dim); text-transform:uppercase;
-}
-.h-scroll-line { width:1px; height:44px; background:var(--grey-3); position:relative; overflow:hidden; }
-.h-scroll-line::after {
-  content:''; position:absolute; width:100%; height:50%;
-  background:var(--gold); top:-50%; animation:scrollDown 2s ease-in-out infinite;
-}
-@keyframes scrollDown { 0%{top:-50%} 100%{top:150%} }
+.h-desc strong { color:var(--white); font-weight:700; }
+.h-cta { grid-column:8 / 13; display:flex; gap:18px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
 
 /* ═══════════════════════════════════════════
    TICKER
@@ -1206,10 +1176,12 @@ footer {
   #wrap  { margin-left:0; padding-top:var(--mh); }
   footer { margin-left:0; }
   section[id], div[id] { scroll-margin-top:var(--mh); }
-  #hero { min-height:calc(100vh - var(--mh)); }
-  .h-left { display:none; }
-  .h-right { padding:80px var(--pad-x) 72px; justify-content:flex-start; min-height:calc(100vh - var(--mh)); }
-  .h-corner,.h-scroll { display:none; }
+  #hero { min-height:calc(100vh - var(--mh)); padding:48px var(--pad-x) 36px; }
+  .h-top { grid-template-columns:1fr; gap:12px; }
+  .h-top-id,.h-top-name,.h-top-loc { grid-column:auto; text-align:left; }
+  .h-bottom { grid-template-columns:1fr; gap:28px; align-items:start; }
+  .h-desc,.h-cta { grid-column:auto; }
+  .h-cta { justify-content:flex-start; }
   #about { grid-template-columns:1fr; }
   .a-left { border-right:none; border-bottom:1px solid var(--border-gold); }
   .a-right { min-height:auto; }
@@ -1355,22 +1327,8 @@ footer {
 }
 
 /* ── HERO : lueur ambiante + glows titres ── */
-#hero {
-  background:
-    radial-gradient(ellipse 65% 50% at 18% 88%, rgba(201,168,76,.06) 0%, transparent 65%),
-    var(--bg-main);
-}
-.h-title .g { text-shadow:var(--glow-sm); }
-.h-title .o { -webkit-text-stroke:1px rgba(136,134,144,.38); }
-
-/* Bouton principal — shimmer traversant */
-.btn-main { position:relative; overflow:hidden; }
-.btn-main::after {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(90deg, transparent 25%, rgba(255,255,255,.15) 50%, transparent 75%);
-  transform:translateX(-120%); transition:transform .7s ease; pointer-events:none;
-}
-.btn-main:hover::after { transform:translateX(120%); }
+#hero { background:var(--bg-main); }
+.h-title .o { -webkit-text-stroke:1.5px var(--text-dim); }
 
 /* ── TICKER : fondu sur les bords ── */
 #ticker {
@@ -1546,22 +1504,25 @@ footer {
 
 <!-- ═══ HERO ═══ -->
 <section id="hero" aria-label="Introduction">
-  <div class="h-left">
-    <div class="h-wm" aria-hidden="true">T</div>
-    <div class="h-logo-giant">
-      <img src="TRT LOGO.PNG" alt="TRT Factory">
+  <div class="h-top">
+    <div class="h-top-id">
+      <span class="sec-num">01</span>
+      <span class="mono-label">Index</span>
     </div>
+    <div class="h-top-name mono-label">TRT Factory — Studio Créatif Hybride</div>
+    <div class="h-top-loc mono-label">Libreville · Gabon<br>Est. 2024</div>
   </div>
-  <div class="h-right">
-    <span class="h-corner" aria-hidden="true">Libreville · Gabon · Afrique</span>
-    <p class="h-eye rv">Studio Créatif Hybride</p>
+
+  <div class="h-main">
+    <p class="h-eye rv">Design · Vidéo · Tech</p>
     <h1 class="h-title rv d1">
-      <span class="g sc">DESIGN.</span><br>
-      <span class="o sc">CINÉMA.</span><br>
+      <span class="g sc">DESIGN.</span>
+      <span class="o sc">CINÉMA.</span>
       <span class="sc">DIGITAL.</span>
     </h1>
-    <p class="h-sub rv d2">Design · Vidéo · Tech</p>
-    <div class="h-sep rv d2" aria-hidden="true"></div>
+  </div>
+
+  <div class="h-bottom">
     <p class="h-desc rv d3">
       TRT Factory réunit un <strong>graphiste</strong>, un <strong>vidéaste</strong>
       et un <strong>développeur</strong> dans un seul studio créatif.
@@ -1570,16 +1531,12 @@ footer {
     <div class="h-cta rv d4">
       <a href="#process" class="btn-main">
         Le Process
-        <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden="true"><path d="M0 5H14M10 1L14 5L10 9" stroke="#080808" stroke-width="1.5"/></svg>
+        <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden="true"><path d="M0 5H14M10 1L14 5L10 9" stroke="currentColor" stroke-width="1.5"/></svg>
       </a>
       <a href="#services" class="btn-ghost">
         Nos services
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.2"/></svg>
       </a>
-    </div>
-    <div class="h-scroll" aria-hidden="true">
-      <div class="h-scroll-line"></div>
-      Défiler
     </div>
   </div>
 </section>
