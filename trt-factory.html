@@ -1401,11 +1401,69 @@ footer {
 .ptf-dev-proj-img img { background:var(--grey-3); }
 .ptf-lb-img { box-shadow:none; border:var(--rule) solid var(--border-grey); }
 
+/* ═══════════════════════════════════════════
+   COUCHE MOUVEMENT
+   Empruntée aux templates éditoriaux HorizonX :
+   grille vivante réactive au curseur, entrée en
+   couches, filets qui se tracent, hero cyclique.
+   Aucune couleur ni typo n'est modifiée : le
+   Néo-Swiss reste la structure, le mouvement
+   s'ajoute par-dessus.
+═══════════════════════════════════════════ */
+
+/* ── Grille vivante (canvas) derrière la colonne éditoriale ── */
+/* width/height explicites : <canvas> est un élément remplacé, `inset:0`
+   seul le laisserait à sa taille intrinsèque de 300×150. */
+#hero-grid {
+  position:absolute; inset:0; width:100%; height:100%; z-index:0;
+  pointer-events:none; opacity:0;
+  transition:opacity 1.2s ease .3s;
+}
+#hero-grid.on { opacity:1; }
+.h-left-col > * { position:relative; z-index:1; }
+
+/* ── Entrée en couches : chaque ligne du titre se dévoile ── */
+@keyframes hx-wipe {
+  from { clip-path:inset(0 0 105% 0); transform:translateY(.14em); }
+  to   { clip-path:inset(0 0 -.18em 0); transform:none; }
+}
+@keyframes hx-draw { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0 -2px 0 0); } }
+@keyframes hx-fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.h-eye      { animation:hx-draw .7s cubic-bezier(.16,1,.3,1) both .15s; }
+.h-title span { animation:hx-wipe .95s cubic-bezier(.16,1,.3,1) both; }
+.h-title span:nth-child(1) { animation-delay:.30s; }
+.h-title span:nth-child(2) { animation-delay:.42s; }
+.h-title span:nth-child(3) { animation-delay:.54s; }
+.h-top      { animation:hx-fade .8s ease both .05s; }
+.h-bottom   { animation:hx-fade .8s ease both .78s; }
+.h-cap, .h-vnum { animation:hx-fade .8s ease both .95s; }
+
+/* ── Les filets de section se tracent à l'arrivée ── */
+.sec-rule { position:relative; border-bottom:0; }
+.sec-rule::after {
+  content:''; position:absolute; left:0; right:0; bottom:0;
+  height:var(--rule); background:var(--gold);
+  transform-origin:left; transition:transform .85s cubic-bezier(.16,1,.3,1);
+}
+.rv .sec-rule::after      { transform:scaleX(0); }
+.rv.vis .sec-rule::after  { transform:scaleX(1); }
+
+/* ── Hero cyclique : deux calques en fondu croisé ── */
+.h-right-col img { transition:opacity 1.1s ease; }
+.h-right-col img.hx-under { opacity:0; }
+.h-right-col img.hx-show  { opacity:1; }
+
+/* ── Le ticker suit la vitesse de défilement (piloté en JS) ── */
+.t-inner.hx-scrub { animation:none; will-change:transform; }
+
 @media(prefers-reduced-motion:reduce) {
   *, *::before, *::after {
     animation-duration:.01ms !important; animation-iteration-count:1 !important;
     transition-duration:.01ms !important; scroll-behavior:auto !important;
   }
+  #hero-grid { display:none; }
+  .rv .sec-rule::after { transform:scaleX(1); }
 }
 </style>
 </head>
@@ -1466,6 +1524,7 @@ footer {
 <!-- ═══ HERO ═══ -->
 <section id="hero" aria-label="Introduction">
   <div class="h-left-col">
+    <canvas id="hero-grid" aria-hidden="true"></canvas>
     <div class="h-top">
       <div class="h-top-id">
         <span class="sec-num">01</span>
@@ -1504,7 +1563,8 @@ footer {
   </div>
 
   <div class="h-right-col">
-    <img src="portfolio/visuels.jpg" alt="Planche de visuels réalisés par TRT Factory : identités, affiches et publications" width="1400" height="1800" fetchpriority="high" decoding="async">
+    <img id="h-img-a" class="hx-show" src="portfolio/visuels.jpg" alt="Planche de visuels réalisés par TRT Factory : identités, affiches et publications" width="1400" height="1800" fetchpriority="high" decoding="async">
+    <img id="h-img-b" class="hx-under" src="portfolio/logos-grid.jpg" alt="" aria-hidden="true" width="1400" height="1800" loading="lazy" decoding="async">
     <span class="h-vnum">2026</span>
     <div class="h-cap"><b>Sélection de travaux</b><span>Branding · Film · Web</span></div>
   </div>
@@ -2640,6 +2700,124 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&quoteModal.classLi
 
 /* Le parallaxe hero visait .h-wm / .h-logo-giant, supprimés de la maquette :
    le listener de scroll associé a été retiré. */
+
+/* ═══ COUCHE MOUVEMENT ═══
+   Grille vivante, hero cyclique, ticker asservi au scroll.
+   Tout est désactivé si l'utilisateur demande moins d'animations. */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const hero = $('hero');
+  if(!hero) return;
+  let heroVisible = true;
+  new IntersectionObserver(es=>{ heroVisible = es[0].isIntersecting; }, {threshold:0}).observe(hero);
+
+  /* ── 1. La trame Swiss réagit au curseur ── */
+  const cv = $('hero-grid');
+  if(cv && window.matchMedia('(pointer:fine)').matches){
+    const ctx = cv.getContext('2d');
+    const STEP = 26, RADIUS = 190;
+    let w=0, h=0, dots=[], px=-9999, py=-9999, raf=null;
+
+    const readColors = () => {
+      const cs = getComputedStyle(document.documentElement);
+      return { base:cs.getPropertyValue('--text-dim').trim(), gold:cs.getPropertyValue('--gold').trim() };
+    };
+    let COL = readColors();
+
+    function build(){
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const r = cv.getBoundingClientRect();
+      w = r.width; h = r.height;
+      if(!w || !h) return;
+      cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      dots = [];
+      for(let y=STEP; y<h; y+=STEP){ for(let x=STEP; x<w; x+=STEP){ dots.push({x,y}); } }
+    }
+
+    function draw(){
+      raf = null;
+      ctx.clearRect(0,0,w,h);
+      for(let i=0;i<dots.length;i++){
+        const d = dots[i];
+        const dist = Math.hypot(d.x-px, d.y-py);
+        const t = dist < RADIUS ? 1 - dist/RADIUS : 0;   // proximité 0 → 1
+        const s = 1.4 + t*t*2.6;
+        ctx.globalAlpha = .3 + t*.7;
+        ctx.fillStyle = t > .04 ? COL.gold : COL.base;
+        ctx.fillRect(d.x - s/2, d.y - s/2, s, s);
+      }
+      ctx.globalAlpha = 1;
+    }
+    const schedule = () => { if(!raf && heroVisible) raf = requestAnimationFrame(draw); };
+
+    hero.addEventListener('pointermove', e=>{
+      const r = cv.getBoundingClientRect();
+      px = e.clientX - r.left; py = e.clientY - r.top;
+      schedule();
+    }, {passive:true});
+    hero.addEventListener('pointerleave', ()=>{ px = py = -9999; schedule(); });
+    window.addEventListener('resize', ()=>{ build(); schedule(); }, {passive:true});
+    new MutationObserver(()=>{ COL = readColors(); schedule(); })
+      .observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+
+    build();
+    if(dots.length){ draw(); cv.classList.add('on'); }
+  }
+
+  /* ── 2. Hero cyclique : la sélection de travaux défile ── */
+  const PLANCHES = [
+    'portfolio/visuels.jpg',
+    'portfolio/biyassi-gn.jpg',
+    'portfolio/chic-en-friperie.jpg',
+    'portfolio/como-n-casa.jpg',
+    'portfolio/logos-grid.jpg'
+  ];
+  let front = $('h-img-a'), back = $('h-img-b'), idx = 0;
+  if(front && back && PLANCHES.length > 1){
+    setInterval(()=>{
+      if(!heroVisible || document.hidden) return;
+      idx = (idx + 1) % PLANCHES.length;
+      const src = PLANCHES[idx];
+      const pre = new Image();
+      pre.onload = ()=>{
+        back.src = src;
+        // Affectation directe plutôt que replace() : aucun risque de dérive
+        // d'état si un cycle est sauté (onglet en arrière-plan, throttling).
+        back.className  = 'hx-show';
+        front.className = 'hx-under';
+        const tmp = front; front = back; back = tmp;   // ping-pong
+      };
+      pre.src = src;
+    }, 5200);
+  }
+
+  /* ── 3. Le ticker se laisse pousser par le défilement ── */
+  const inner = document.querySelector('.t-inner');
+  if(inner){
+    inner.classList.add('hx-scrub');
+    let offset = 0, half = 0, lastY = window.scrollY, boost = 0;
+    const measure = () => { half = inner.scrollWidth / 2; };
+    measure();
+    window.addEventListener('resize', measure, {passive:true});
+    window.addEventListener('scroll', ()=>{
+      const y = window.scrollY;
+      boost += (y - lastY) * .35;     // le scroll injecte de la vitesse
+      lastY = y;
+    }, {passive:true});
+
+    (function tick(){
+      boost *= .92;                    // amortissement
+      offset -= .55 + boost;
+      if(half){
+        if(offset <= -half) offset += half;
+        else if(offset > 0) offset -= half;
+      }
+      inner.style.transform = 'translateX(' + offset.toFixed(2) + 'px)';
+      requestAnimationFrame(tick);
+    })();
+  }
+})();
 
 if(qmForm){
   qmForm.addEventListener('submit',e=>{
