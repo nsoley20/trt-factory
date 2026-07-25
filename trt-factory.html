@@ -1414,13 +1414,29 @@ footer {
 /* ── Grille vivante (canvas) derrière la colonne éditoriale ── */
 /* width/height explicites : <canvas> est un élément remplacé, `inset:0`
    seul le laisserait à sa taille intrinsèque de 300×150. */
-#hero-grid {
+#hero-grid, #hero-gl {
   position:absolute; inset:0; width:100%; height:100%; z-index:0;
   pointer-events:none; opacity:0;
   transition:opacity 1.2s ease .3s;
 }
-#hero-grid.on { opacity:1; }
+#hero-grid.on, #hero-gl.on { opacity:1; }
+/* Quand WebGL prend le relais, la trame 2D s'efface */
+[data-gl="on"] #hero-grid { opacity:0; transition:opacity .6s ease; }
 .h-left-col > * { position:relative; z-index:1; }
+
+/* ── Barre de progression : timeline de scroll native ──
+   Remplace l'écouteur de scroll JS. L'animation tourne hors du
+   thread principal ; le JS ne sert plus que de repli. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    @keyframes trt-progress { from { transform:scaleY(0); } to { transform:scaleY(1); } }
+    #prog-f {
+      height:100%; transform-origin:0 0;
+      animation:trt-progress auto linear;
+      animation-timeline:scroll();
+    }
+  }
+}
 
 /* ── Entrée en couches : chaque ligne du titre se dévoile ── */
 @keyframes hx-wipe {
@@ -1525,6 +1541,7 @@ footer {
 <section id="hero" aria-label="Introduction">
   <div class="h-left-col">
     <canvas id="hero-grid" aria-hidden="true"></canvas>
+    <canvas id="hero-gl" aria-hidden="true"></canvas>
     <div class="h-top">
       <div class="h-top-id">
         <span class="sec-num">01</span>
@@ -2398,10 +2415,14 @@ const dots   = $$('.sb-dot');
 const pgCurr = $('pg-curr');
 const progF  = $('prog-f');
 
+/* La barre de progression est pilotée en CSS (animation-timeline: scroll()).
+   On ne la calcule en JS que si le navigateur ne sait pas le faire. */
+const NATIVE_SCROLL_TL = window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()');
+
 function onScroll(){
   const scrolled = window.scrollY;
   const total    = document.documentElement.scrollHeight - window.innerHeight;
-  if(progF) progF.style.height = (total > 0 ? scrolled/total*100 : 0) + '%';
+  if(progF && !NATIVE_SCROLL_TL) progF.style.height = (total > 0 ? scrolled/total*100 : 0) + '%';
   let active = 0;
   const mid = window.innerHeight * .45;
   SECTIONS.forEach((id,i)=>{ const el = document.getElementById(id); if(el && scrolled >= el.offsetTop - mid) active = i; });
@@ -2751,11 +2772,12 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&quoteModal.classLi
     }
     const schedule = () => { if(!raf && heroVisible) raf = requestAnimationFrame(draw); };
 
-    hero.addEventListener('pointermove', e=>{
+    const onMove = e=>{
       const r = cv.getBoundingClientRect();
       px = e.clientX - r.left; py = e.clientY - r.top;
       schedule();
-    }, {passive:true});
+    };
+    hero.addEventListener('pointermove', onMove, {passive:true});
     hero.addEventListener('pointerleave', ()=>{ px = py = -9999; schedule(); });
     window.addEventListener('resize', ()=>{ build(); schedule(); }, {passive:true});
     new MutationObserver(()=>{ COL = readColors(); schedule(); })
@@ -2763,6 +2785,12 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&quoteModal.classLi
 
     build();
     if(dots.length){ draw(); cv.classList.add('on'); }
+
+    // Si WebGL prend le relais, la trame 2D se retire proprement.
+    document.addEventListener('trt:gl-ready', ()=>{
+      hero.removeEventListener('pointermove', onMove);
+      if(raf){ cancelAnimationFrame(raf); raf = null; }
+    }, {once:true});
   }
 
   /* ── 2. Hero cyclique : la sélection de travaux défile ── */
@@ -2832,6 +2860,213 @@ if(qmForm){
     body+=`══════════════════════════════\nTOTAL ESTIMÉ : ${fmtXAF(total)}\n\n(Tarifs indicatifs — devis définitif après échange)`;
     window.location.href=`mailto:contact@trtfactory.com?subject=${encodeURIComponent('Demande de devis — '+nm)}&body=${encodeURIComponent(body)}`;
   });
+}
+</script>
+
+<!-- ═══ GRILLE 3D DU HERO ═══
+     La trame Néo-Swiss devient un plan dans l'espace : plate au repos,
+     déformée sous le curseur, basculée en perspective au défilement.
+     Three.js n'est chargé qu'en dernier recours — après le premier rendu,
+     seulement si l'appareil et le réseau le permettent. La trame 2D reste
+     le rendu de base et suffit à elle seule. -->
+<script type="module">
+const hero = document.getElementById('hero');
+const cv   = document.getElementById('hero-gl');
+if(!hero || !cv) throw new Error('hero absent');
+
+// ── Conditions d'activation : on s'abstient plutôt que de dégrader ──
+const conn = navigator.connection || {};
+const refuse =
+  matchMedia('(prefers-reduced-motion: reduce)').matches ||
+  !matchMedia('(pointer:fine)').matches ||
+  conn.saveData === true ||
+  /(^|-)2g$/.test(conn.effectiveType || '') ||
+  navigator.hardwareConcurrency < 4;
+
+function webglOK(){
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl2') || c.getContext('webgl'));
+  } catch { return false; }
+}
+
+if(!refuse && webglOK()){
+  // Chargé seulement quand le hero est réellement à l'écran.
+  const io = new IntersectionObserver(es=>{
+    if(!es[0].isIntersecting) return;
+    io.disconnect();
+    requestIdleCallback ? requestIdleCallback(boot, {timeout:2500}) : setTimeout(boot, 400);
+  }, {threshold:.01});
+  io.observe(hero);
+}
+
+async function boot(){
+  let THREE;
+  try {
+    THREE = await import('https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js');
+  } catch {
+    return;                    // CDN injoignable : la trame 2D reste en place
+  }
+
+  const css = getComputedStyle(document.documentElement);
+  const readColors = () => ({
+    base: new THREE.Color(css.getPropertyValue('--text-dim').trim()),
+    gold: new THREE.Color(css.getPropertyValue('--gold').trim())
+  });
+  const isLight = () => document.documentElement.getAttribute('data-theme') === 'light';
+
+  const renderer = new THREE.WebGLRenderer({ canvas:cv, alpha:true, antialias:false });
+  renderer.setClearAlpha(0);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
+  camera.position.z = 12;
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const STEP = .42, HALF_H = 5;
+  let geo = null, pts = null;
+
+  // Échelles calibrées pour une trame FINE : ~2 px au repos, ~6 px sous le
+  // curseur. gl_PointSize est en pixels de l'écran physique, d'où uDpr.
+  const uniforms = {
+    uPointer: { value: new THREE.Vector2(999, 999) },
+    uTime:    { value: 0 },
+    uRadius:  { value: 2.0 },      // rayon d'influence, en unités monde (grille = 10 de haut)
+    uLift:    { value: .95 },
+    uSize:    { value: .075 },
+    uDpr:     { value: Math.min(devicePixelRatio, 2) },
+    // Du sombre sur fond clair se voit plus que l'inverse : on compense.
+    uAlpha:   { value: isLight() ? .20 : .30 },
+    uBase:    { value: readColors().base },
+    uGold:    { value: readColors().gold }
+  };
+
+  const material = new THREE.ShaderMaterial({
+    uniforms, transparent:true, depthWrite:false,
+    vertexShader: `
+      uniform vec2  uPointer;
+      uniform float uTime, uRadius, uLift, uSize, uDpr;
+      varying float vGlow;
+      void main(){
+        vec3 p = position;
+        float d = distance(p.xy, uPointer);
+        float infl = 1.0 - smoothstep(0.0, uRadius, d);
+        infl = pow(infl, 1.4);                    // pic net sans être ponctuel
+        p.z += infl * uLift;
+        p.z += sin(uTime * .55 + p.x * .34 + p.y * .22) * .07;   // respiration
+        vGlow = infl;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_PointSize = uSize * (1.0 + infl * 3.4) * uDpr * (300.0 / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      uniform vec3 uBase, uGold;
+      uniform float uAlpha;
+      varying float vGlow;
+      void main(){
+        // Points carrés, pas ronds : la trame reste suisse.
+        vec3 c = mix(uBase, uGold, smoothstep(.02, .32, vGlow));
+        gl_FragColor = vec4(c, uAlpha + vGlow * (1.0 - uAlpha));
+      }`
+  });
+
+  function buildGrid(aspect){
+    if(geo){ group.remove(pts); geo.dispose(); }
+    const halfW = HALF_H * aspect;
+    const cols = Math.floor(halfW * 2 / STEP);
+    const rows = Math.floor(HALF_H * 2 / STEP);
+    const pos = new Float32Array(cols * rows * 3);
+    let i = 0;
+    for(let y = 0; y < rows; y++){
+      for(let x = 0; x < cols; x++){
+        pos[i++] = -halfW + x * STEP;
+        pos[i++] = -HALF_H + y * STEP;
+        pos[i++] = 0;
+      }
+    }
+    geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    pts = new THREE.Points(geo, material);
+    group.add(pts);
+  }
+
+  function resize(){
+    const r = cv.getBoundingClientRect();
+    if(!r.width || !r.height) return;
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+    buildGrid(camera.aspect);
+  }
+  resize();
+  addEventListener('resize', resize, {passive:true});
+
+  // ── Curseur projeté sur le plan de la grille ──
+  const ray   = new THREE.Raycaster();
+  const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  const ndc   = new THREE.Vector2();
+  const hit   = new THREE.Vector3();
+  let pointerIn = false;
+
+  hero.addEventListener('pointermove', e=>{
+    const r = cv.getBoundingClientRect();
+    ndc.x =  ((e.clientX - r.left) / r.width)  * 2 - 1;
+    ndc.y = -((e.clientY - r.top)  / r.height) * 2 + 1;
+    pointerIn = true;
+  }, {passive:true});
+  hero.addEventListener('pointerleave', ()=>{ pointerIn = false; });
+
+  // ── Défilement : le plan bascule et révèle sa profondeur ──
+  let scrollN = 0;
+  addEventListener('scroll', ()=>{
+    scrollN = Math.min(1, scrollY / Math.max(1, innerHeight));
+  }, {passive:true});
+
+  new MutationObserver(()=>{
+    const c = readColors();
+    uniforms.uBase.value.copy(c.base);
+    uniforms.uGold.value.copy(c.gold);
+    uniforms.uAlpha.value = isLight() ? .20 : .30;
+  }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+
+  let visible = true;
+  new IntersectionObserver(es=>{ visible = es[0].isIntersecting; }, {threshold:0}).observe(hero);
+
+  const clock = new THREE.Clock();
+  let tiltX = 0, tiltY = 0;
+
+  renderer.setAnimationLoop(()=>{
+    if(!visible || document.hidden) return;
+    uniforms.uTime.value = clock.getElapsedTime();
+
+    // Le pointeur suit le plan réellement incliné
+    if(pointerIn){
+      plane.normal.set(0, 0, 1).applyEuler(group.rotation);
+      ray.setFromCamera(ndc, camera);
+      if(ray.ray.intersectPlane(plane, hit)){
+        group.worldToLocal(hit);
+        uniforms.uPointer.value.set(hit.x, hit.y);
+      }
+    } else {
+      uniforms.uPointer.value.set(999, 999);
+    }
+
+    // Bascule progressive, amortie
+    tiltX += (scrollN * .42 - tiltX) * .06;
+    tiltY += (ndc.x * .10 * (pointerIn ? 1 : 0) - tiltY) * .05;
+    group.rotation.x = tiltX;
+    group.rotation.y = tiltY;
+    camera.position.z = 12 - scrollN * 1.6;
+
+    renderer.render(scene, camera);
+  });
+
+  cv.classList.add('on');
+  document.documentElement.dataset.gl = 'on';
+  document.dispatchEvent(new CustomEvent('trt:gl-ready'));
 }
 </script>
 </body>
