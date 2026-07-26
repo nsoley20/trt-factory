@@ -1411,18 +1411,91 @@ footer {
    s'ajoute par-dessus.
 ═══════════════════════════════════════════ */
 
-/* ── Grille vivante (canvas) derrière la colonne éditoriale ── */
-/* width/height explicites : <canvas> est un élément remplacé, `inset:0`
+/* ── Grille vivante 2D (canvas) derrière la colonne éditoriale ── */
+/* C'est le rendu de base : il suffit à lui seul. Le WebGL vient par-dessus
+   quand la machine le permet.
+   width/height explicites : <canvas> est un élément remplacé, `inset:0`
    seul le laisserait à sa taille intrinsèque de 300×150. */
-#hero-grid, #hero-gl {
+#hero-grid {
   position:absolute; inset:0; width:100%; height:100%; z-index:0;
   pointer-events:none; opacity:0;
   transition:opacity 1.2s ease .3s;
 }
-#hero-grid.on, #hero-gl.on { opacity:1; }
+#hero-grid.on { opacity:1; }
 /* Quand WebGL prend le relais, la trame 2D s'efface */
 [data-gl="on"] #hero-grid { opacity:0; transition:opacity .6s ease; }
 .h-left-col > * { position:relative; z-index:1; }
+
+/* ═══════════════════════════════════════════
+   SCÈNE 3D — deux calques, un seul moteur
+
+   Deux <canvas> plein écran, chacun son contexte WebGL, et un seul
+   moteur qui découpe (scissor) la zone de chaque objet :
+
+     #gl-bg  z-index -1  → derrière le contenu. Sert le hero, dont le fond
+                           devient transparent (il est identique à celui du
+                           body, donc rien ne change à l'œil).
+     #gl-fg  z-index 500 → au-dessus des fonds de section opaques, sous la
+                           navigation (600) et les modales (900+). Sert les
+                           objets posés dans des emplacements vides.
+
+   Un seul canvas ne suffisait pas : les sections ont des fonds opaques
+   (--bg-section) qui masqueraient un calque situé derrière.
+═══════════════════════════════════════════ */
+#gl-bg, #gl-fg {
+  position:fixed; inset:0; width:100%; height:100%;
+  pointer-events:none; opacity:0;
+  transition:opacity 1.1s ease .2s;
+}
+#gl-bg { z-index:-1; }
+#gl-fg { z-index:500; }
+[data-gl="on"] #gl-bg, [data-gl="on"] #gl-fg { opacity:1; }
+
+/* Le hero s'efface pour laisser voir la scène de fond */
+[data-gl="on"] #hero { background:transparent; }
+
+/* Le dallage est confiné à une bande derrière le titre par un dégradé de
+   la couleur de fond. Sans lui, sa partie la plus lumineuse — la plus
+   proche, donc la plus basse — tombe pile derrière le paragraphe du hero
+   et en ruine le contraste.
+   Un `mask-image` aurait été plus direct, mais il ne se composite pas de
+   façon fiable par-dessus un canvas WebGL ; un dégradé opaque, si. */
+[data-gl="on"] .h-left-col::before {
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:linear-gradient(to bottom,
+    var(--bg-main) 2%, transparent 18%, transparent 62%, var(--bg-main) 84%);
+}
+
+/* ── Emplacements : des boîtes vides que le canvas vient peindre ──
+   Ils n'existent que si la 3D tourne : sans WebGL, aucune trace dans
+   la mise en page. */
+.gl-slot { display:none; }
+[data-gl="on"] .gl-slot { display:block; }
+
+/* ADN — un objet par métier, en troisième colonne du triptyque */
+[data-gl="on"] .a-tri-item {
+  grid-template-columns:52px minmax(0,1fr) clamp(112px,12vw,186px);
+}
+.gl-slot--tri { align-self:stretch; min-height:130px; }
+
+/* Différence — les trois anneaux au-dessus du relevé chiffré */
+[data-gl="on"] .diff-right {
+  flex-direction:column; justify-content:center; gap:clamp(20px,3vw,44px);
+}
+.gl-slot--rings { width:100%; height:clamp(130px,16vh,200px); }
+
+/* Contact — le sceau occupe l'espace libre de la colonne gauche */
+/* max-width : le sceau est un monolithe vertical, un emplacement large et
+   plat le réduirait à un trait au milieu du vide. */
+.gl-slot--seal { flex:1; min-height:230px; max-width:300px; }
+
+@media(max-width:1100px){
+  [data-gl="on"] .a-tri-item { grid-template-columns:52px minmax(0,1fr); }
+  .gl-slot--tri { display:none !important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  #gl-bg, #gl-fg { display:none; }
+}
 
 /* ── Barre de progression : timeline de scroll native ──
    Remplace l'écouteur de scroll JS. L'animation tourne hors du
@@ -1487,6 +1560,10 @@ footer {
 
 <a href="#hero" class="skip-link">Aller au contenu</a>
 
+<!-- Calques 3D. Vides et invisibles tant que le moteur n'a pas démarré. -->
+<canvas id="gl-bg" aria-hidden="true"></canvas>
+<canvas id="gl-fg" aria-hidden="true"></canvas>
+
 <!-- THEME TOGGLE -->
 <button id="theme-toggle" aria-label="Basculer entre le mode clair et le mode sombre">
 <span class="lbl-to-light" aria-hidden="true">Clair</span>
@@ -1541,7 +1618,6 @@ footer {
 <section id="hero" aria-label="Introduction">
   <div class="h-left-col">
     <canvas id="hero-grid" aria-hidden="true"></canvas>
-    <canvas id="hero-gl" aria-hidden="true"></canvas>
     <div class="h-top">
       <div class="h-top-id">
         <span class="sec-num">01</span>
@@ -1635,6 +1711,7 @@ footer {
           <div class="a-tri-sub">&amp; Branding</div>
           <div class="a-tri-meta">Identité · Charte · Direction artistique · UI</div>
         </div>
+        <div class="gl-slot gl-slot--tri" data-gl-scene="print" aria-hidden="true"></div>
       </div>
       <div class="a-tri-item rv d1">
         <span class="a-tri-num" aria-hidden="true">02</span>
@@ -1643,6 +1720,7 @@ footer {
           <div class="a-tri-sub">&amp; Photo</div>
           <div class="a-tri-meta">Film de marque · Shooting · Motion · Reels</div>
         </div>
+        <div class="gl-slot gl-slot--tri" data-gl-scene="lens" aria-hidden="true"></div>
       </div>
       <div class="a-tri-item rv d2">
         <span class="a-tri-num" aria-hidden="true">03</span>
@@ -1651,6 +1729,7 @@ footer {
           <div class="a-tri-sub">&amp; Digital</div>
           <div class="a-tri-meta">Développement · UX/UI · Apps · Déploiement</div>
         </div>
+        <div class="gl-slot gl-slot--tri" data-gl-scene="slab" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -2202,6 +2281,7 @@ footer {
     </ul>
   </div>
   <div class="diff-right">
+    <div class="gl-slot gl-slot--rings" data-gl-scene="rings" aria-hidden="true"></div>
     <div class="diff-statement">
       <div class="diff-s-row rv lt">
         <p class="diff-s-line">3</p>
@@ -2233,6 +2313,7 @@ footer {
         et les questions qui manquent.
       </p>
     </div>
+    <div class="gl-slot gl-slot--seal" data-gl-scene="seal" aria-hidden="true"></div>
     <div>
       <address class="con-details rv d3" style="font-style:normal">
         <div class="con-detail">
@@ -2863,25 +2944,31 @@ if(qmForm){
 }
 </script>
 
-<!-- ═══ GRILLE 3D DU HERO ═══
-     La trame Néo-Swiss devient un plan dans l'espace : plate au repos,
-     déformée sous le curseur, basculée en perspective au défilement.
-     Three.js n'est chargé qu'en dernier recours — après le premier rendu,
-     seulement si l'appareil et le réseau le permettent. La trame 2D reste
-     le rendu de base et suffit à elle seule. -->
-<script type="module">
-const hero = document.getElementById('hero');
-const cv   = document.getElementById('hero-gl');
-if(!hero || !cv) throw new Error('hero absent');
+<!-- ═══════════════════════════════════════════════════════════════
+     SCÈNE 3D — moteur unique, six tableaux
 
-// ── Conditions d'activation : on s'abstient plutôt que de dégrader ──
-const conn = navigator.connection || {};
+     Un seul module pilote toute la 3D du site. Il ne démarre qu'après
+     le premier rendu, et seulement si la machine, le réseau et les
+     préférences de l'utilisateur s'y prêtent. Sans lui, le site est
+     complet : la trame 2D du hero reste le rendu de base et les
+     emplacements des objets n'existent tout simplement pas.
+
+     Réalisme : l'éclairage vient d'un studio construit à la volée
+     (nappes lumineuses + sol clair, converti en carte d'environnement
+     par PMREM). Aucun fichier HDRI n'est téléchargé, et les reflets
+     portent l'or de la marque — la lumière fait partie de l'identité.
+═══════════════════════════════════════════════════════════════ -->
+<script type="module">
+
+/* ── Refus plutôt que dégradation ─────────────────────────────── */
+const conn  = navigator.connection || {};
+const cores = navigator.hardwareConcurrency || 2;
 const refuse =
   matchMedia('(prefers-reduced-motion: reduce)').matches ||
   !matchMedia('(pointer:fine)').matches ||
   conn.saveData === true ||
   /(^|-)2g$/.test(conn.effectiveType || '') ||
-  navigator.hardwareConcurrency < 4;
+  cores < 4;
 
 function webglOK(){
   try {
@@ -2890,183 +2977,587 @@ function webglOK(){
   } catch { return false; }
 }
 
-if(!refuse && webglOK()){
-  // Chargé seulement quand le hero est réellement à l'écran.
-  const io = new IntersectionObserver(es=>{
-    if(!es[0].isIntersecting) return;
+/* Deux paliers : le haut ajoute l'anticrénelage, les ombres portées
+   et une trame plus dense. En dessous de 4 cœurs on ne démarre pas. */
+const TIER = (cores >= 8 && (navigator.deviceMemory || 4) >= 8) ? 2 : 1;
+const DPR  = Math.min(devicePixelRatio || 1, TIER > 1 ? 2 : 1.5);
+
+const heroSlot = document.querySelector('.h-left-col');
+
+if(!refuse && webglOK() && heroSlot){
+  // On surveille TOUS les emplacements, pas seulement le hero : sur un lien
+  // direct vers #contact, le hero n'est jamais à l'écran et rien ne
+  // démarrerait.
+  const io = new IntersectionObserver(es => {
+    if(!es.some(e => e.isIntersecting)) return;
     io.disconnect();
     requestIdleCallback ? requestIdleCallback(boot, {timeout:2500}) : setTimeout(boot, 400);
   }, {threshold:.01});
-  io.observe(hero);
+  // …et on observe leur PARENT : tant que la 3D n'a pas démarré, les
+  // emplacements sont en display:none et ne croisent jamais rien.
+  io.observe(heroSlot);
+  document.querySelectorAll('[data-gl-scene]').forEach(el => io.observe(el.parentElement));
 }
 
 async function boot(){
-  let THREE;
-  try {
-    THREE = await import('https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js');
-  } catch {
-    return;                    // CDN injoignable : la trame 2D reste en place
+  let T;
+  try { T = await import('https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js'); }
+  catch { return; }                    // CDN injoignable : on ne fait rien
+
+  const root = document.documentElement;
+  const css  = getComputedStyle(root);
+  const tok  = n => css.getPropertyValue(n).trim();
+  const isLight = () => root.getAttribute('data-theme') === 'light';
+
+  const GOLD  = new T.Color(tok('--gold') || '#C9A84C');
+  const BGCOL = new T.Color();
+
+  /* Le métal, le papier et l'exposition changent avec le thème :
+     un objet sombre sur fond clair pèse plus qu'un clair sur fond
+     sombre, il faut compenser. */
+  const PAL = () => isLight()
+    // `metal` et `hero` sont des albédos de métal : ils doivent rester
+    // CLAIRS. Un métal est sombre parce que son environnement l'est, pas
+    // parce que sa couleur propre l'est — le teinter en gris anthracite
+    // ne donne qu'une surface morte, sans reflet à renvoyer.
+    ? { metal:0xb9bcc1, dark:0x74797f, paper:0xf4f2ed, exposure:1.18, shadow:.20, hero:0xc0c4c9 }
+    : { metal:0x8d939b, dark:0x14161a, paper:0xe6e3dc, exposure:1.00, shadow:.34, hero:0x4a5058 };
+
+  const readBG = () => BGCOL.set(tok('--bg-main') || '#0d0d0f');
+  readBG();
+
+  /* ── Géométrie : boîte chanfreinée ────────────────────────────
+     Le chanfrein n'est pas cosmétique : c'est lui qui accroche un
+     filet de lumière sur l'arête. Sans lui, le métal ne se lit pas.
+     ExtrudeGeometry suffit — pas besoin d'un module supplémentaire. */
+  function chamferBox(w, h, d, b){
+    b = Math.min(b, Math.min(w, h, d) * .3);
+    const s = new T.Shape();
+    const x = w / 2, y = h / 2;
+    s.moveTo(-x, -y); s.lineTo(x, -y); s.lineTo(x, y); s.lineTo(-x, y); s.closePath();
+    const g = new T.ExtrudeGeometry(s, {
+      depth: Math.max(1e-4, d - 2 * b), curveSegments: 1,
+      bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelOffset: 0, bevelSegments: 1
+    });
+    g.center();
+    return g;
   }
 
-  const css = getComputedStyle(document.documentElement);
-  const readColors = () => ({
-    base: new THREE.Color(css.getPropertyValue('--text-dim').trim()),
-    gold: new THREE.Color(css.getPropertyValue('--gold').trim())
-  });
-  const isLight = () => document.documentElement.getAttribute('data-theme') === 'light';
+  /* ── Ombre de contact ─────────────────────────────────────────
+     Une vraie ombre portée demanderait un sol et une passe de shadow
+     map par objet. Un dégradé radial posé au pied suffit à ancrer
+     l'objet, pour un coût nul. */
+  let shadowTex = null;
+  function shadowTexture(){
+    if(shadowTex) return shadowTex;
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const g = c.getContext('2d');
+    // Dégradé opaque en niveaux de gris : une alphaMap lit le canal vert,
+    // pas l'alpha. Un dégradé transparent donnerait un carré noir plein.
+    const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grd.addColorStop(0,   '#ffffff');
+    grd.addColorStop(.45, '#6e6e6e');
+    grd.addColorStop(1,   '#000000');
+    g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+    shadowTex = new T.CanvasTexture(c);
+    return shadowTex;
+  }
+  function contactShadow(size, opacity){
+    const m = new T.Mesh(
+      new T.PlaneGeometry(size, size),
+      new T.MeshBasicMaterial({
+        color: 0x000000, alphaMap: shadowTexture(),
+        transparent: true, opacity, depthWrite: false
+      })
+    );
+    m.rotation.x = -Math.PI / 2;
+    return m;
+  }
 
-  const renderer = new THREE.WebGLRenderer({ canvas:cv, alpha:true, antialias:false });
-  renderer.setClearAlpha(0);
+  /* ── Studio virtuel ───────────────────────────────────────────
+     Des nappes lumineuses dans une enceinte sombre, converties en
+     carte d'environnement. Le sol clair donne au métal sa ligne
+     d'horizon ; sans elle, une sphère chromée ne ressemble à rien. */
+  function studioEnv(renderer){
+    const s = new T.Scene();
+    const quad = new T.PlaneGeometry(1, 1);
+    const mats = [];
+    const emissive = (hex, i) => {
+      const m = new T.MeshBasicMaterial({ side: T.DoubleSide });
+      m.color.set(hex).multiplyScalar(i);
+      mats.push(m);
+      return m;
+    };
+    const panel = (hex, i, sx, sy, pos, look) => {
+      const m = new T.Mesh(quad, emissive(hex, i));
+      m.scale.set(sx, sy, 1);
+      m.position.set(pos[0], pos[1], pos[2]);
+      m.lookAt(look[0], look[1], look[2]);
+      s.add(m);
+    };
 
-  const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
-  camera.position.z = 12;
+    // L'enceinte n'est pas décorative : c'est ce que les faces verticales
+    // renvoient. Trop noire, tout métal devient une silhouette morte.
+    const room = new T.Mesh(new T.BoxGeometry(26, 15, 26), emissive(0x1a1d22, 1.4));
+    room.material.side = T.BackSide;
+    s.add(room);
 
-  const group = new THREE.Group();
-  scene.add(group);
+    // Dosage : un studio trop chaud transforme toute surface métallique en
+    // masse dorée. L'or ne sert qu'au contre-jour, il donne le liseré sur
+    // les arêtes sans teindre les faces.
+    panel(0x8e949c, .7,  28, 28, [0, -7.4,  0], [0,  10,  0]);  // sol : l'horizon
+    panel(0xfff2df, 8.5, 10,  6, [-6.5, 5.5, 5], [0, 0, 0]);    // clé, chaude
+    panel(0xd6e5ff, 2.2,  8,  8, [ 7.5, 1,   4], [0, 0, 0]);    // débouchage, froid
+    panel(tok('--gold') || '#C9A84C', 3.2, 13, 2.4, [0, 2.8, -8.5], [0, 0, 0]); // contre-jour or
+    panel(0xffffff, 2.4, 15, 15, [0, 7.4, 0], [0, -10, 0]);     // zénithale
+    // Grande nappe frontale, derrière le spectateur : sans elle, les faces
+    // tournées vers nous n'ont rien de clair à réfléchir.
+    panel(0xeef3ff, 2.0, 18, 12, [0, 1.5, 9], [0, 0, 0]);
 
-  const STEP = .42, HALF_H = 5;
-  let geo = null, pts = null;
+    const pmrem = new T.PMREMGenerator(renderer);
+    const rt = pmrem.fromScene(s, .03);
+    pmrem.dispose();
+    quad.dispose(); room.geometry.dispose();
+    mats.forEach(m => m.dispose());
+    return rt.texture;
+  }
 
-  // Échelles calibrées pour une trame FINE : ~2 px au repos, ~6 px sous le
-  // curseur. gl_PointSize est en pixels de l'écran physique, d'où uDpr.
-  const uniforms = {
-    uPointer: { value: new THREE.Vector2(999, 999) },
-    uTime:    { value: 0 },
-    uRadius:  { value: 2.0 },      // rayon d'influence, en unités monde (grille = 10 de haut)
-    uLift:    { value: .95 },
-    uSize:    { value: .075 },
-    uDpr:     { value: Math.min(devicePixelRatio, 2) },
-    // Du sombre sur fond clair se voit plus que l'inverse : on compense.
-    uAlpha:   { value: isLight() ? .20 : .30 },
-    uBase:    { value: readColors().base },
-    uGold:    { value: readColors().gold }
-  };
+  /* ── Un calque = un contexte, découpé en ciseaux par objet ──── */
+  /* `expo` : le fond passe derrière du texte, il doit rester en retrait.
+     Les objets posés, eux, sont des pièces montrées — ils gardent leur
+     pleine exposition. Deux contextes, deux réglages. */
+  function makeStage(canvas, expo){
+    const r = new T.WebGLRenderer({
+      canvas, alpha: true, antialias: TIER > 1, powerPreference: 'high-performance'
+    });
+    r.setPixelRatio(DPR);
+    r.setSize(innerWidth, innerHeight, false);
+    r.outputColorSpace   = T.SRGBColorSpace;
+    r.toneMapping        = T.ACESFilmicToneMapping;
+    r.toneMappingExposure = PAL().exposure * expo;
+    r.setClearAlpha(0);
+    r.shadowMap.enabled = TIER > 1;
+    r.shadowMap.type    = T.PCFSoftShadowMap;
+    const env = studioEnv(r);
+    r.setScissorTest(true);
+    return { r, env, expo, slots: [] };
+  }
 
-  const material = new THREE.ShaderMaterial({
-    uniforms, transparent:true, depthWrite:false,
-    vertexShader: `
-      uniform vec2  uPointer;
-      uniform float uTime, uRadius, uLift, uSize, uDpr;
-      varying float vGlow;
-      void main(){
-        vec3 p = position;
-        float d = distance(p.xy, uPointer);
-        float infl = 1.0 - smoothstep(0.0, uRadius, d);
-        infl = pow(infl, 1.4);                    // pic net sans être ponctuel
-        p.z += infl * uLift;
-        p.z += sin(uTime * .55 + p.x * .34 + p.y * .22) * .07;   // respiration
-        vGlow = infl;
-        vec4 mv = modelViewMatrix * vec4(p, 1.0);
-        gl_PointSize = uSize * (1.0 + infl * 3.4) * uDpr * (300.0 / -mv.z);
-        gl_Position = projectionMatrix * mv;
-      }`,
-    fragmentShader: `
-      uniform vec3 uBase, uGold;
-      uniform float uAlpha;
-      varying float vGlow;
-      void main(){
-        // Points carrés, pas ronds : la trame reste suisse.
-        vec3 c = mix(uBase, uGold, smoothstep(.02, .32, vGlow));
-        gl_FragColor = vec4(c, uAlpha + vGlow * (1.0 - uAlpha));
-      }`
-  });
+  /* .6 mesuré : la bande visible du dallage sort à ~L52 sur un fond à L6.
+     Le surtitre or (#C9A84C) garde alors ~5,3:1 de contraste. C'est lui,
+     et non le grand titre, qui plafonne la luminosité de la plaque : au
+     delà de ~L70 il passe sous le seuil AA. */
+  const bg = makeStage(document.getElementById('gl-bg'), .6);
+  const fg = makeStage(document.getElementById('gl-fg'), 1);
 
-  function buildGrid(aspect){
-    if(geo){ group.remove(pts); geo.dispose(); }
-    const halfW = HALF_H * aspect;
-    const cols = Math.floor(halfW * 2 / STEP);
-    const rows = Math.floor(HALF_H * 2 / STEP);
-    const pos = new Float32Array(cols * rows * 3);
-    let i = 0;
-    for(let y = 0; y < rows; y++){
-      for(let x = 0; x < cols; x++){
-        pos[i++] = -halfW + x * STEP;
-        pos[i++] = -HALF_H + y * STEP;
-        pos[i++] = 0;
+  /* ── Pointeur, partagé par toutes les scènes ─────────────────── */
+  const ptr = { x: -1e5, y: -1e5 };
+  addEventListener('pointermove', e => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+  document.addEventListener('pointerleave', () => { ptr.x = ptr.y = -1e5; });
+
+  const ease = p => 1 - Math.pow(1 - p, 3);
+
+  /* ═══════════════ 1. HERO — la grille matérialisée ═══════════════
+     La trame néo-suisse devient un dallage usiné, vu en rase-mottes.
+     Au repos elle est presque plate et se lit comme une grille ; sous
+     le curseur les dalles se soulèvent et virent à l'or. La brume la
+     fond dans le fond de page au lieu de la couper net. */
+  function heroScene(env){
+    const scene = new T.Scene();
+    scene.environment = env;
+    // Brume légère : elle ne sert plus qu'à adoucir l'horizon. C'est le
+    // dégradé CSS qui découpe la bande visible ; si la brume écrase aussi
+    // le lointain, la seule partie montrée est justement la plus éteinte.
+    // Portée calée sur la distance du bord arrière (~18,7) : la plaque doit
+    // s'éteindre AVANT de finir, sinon son arête se lit comme un trait net
+    // en travers du hero.
+    scene.fog = new T.Fog(BGCOL.getHex(), 9, 19);
+
+    const cam = new T.PerspectiveCamera(34, 1, .1, 60);
+
+    const COLS = TIER > 1 ? 58 : 44, ROWS = TIER > 1 ? 38 : 28;
+    const STEP = .42, SIZE = .36, REST = .05, LIFT = 1.15, RAD = 2.7;
+    const N = COLS * ROWS;
+
+    const geo = chamferBox(SIZE, SIZE, 1, .022);
+    geo.rotateX(-Math.PI / 2);        // l'extrusion devient la hauteur
+    geo.translate(0, .5, 0);          // base à y=0 : la mise à l'échelle pousse vers le haut
+
+    // Métallicité basse ASSUMÉE : à .85 la plaque est un miroir, et vue en
+    // rase-mottes un miroir horizontal ne renvoie que l'horizon — donc du
+    // noir. À .32 elle répond en diffus et se lit quel que soit l'angle.
+    const mat = new T.MeshStandardMaterial({
+      color: 0xffffff, metalness: .32, roughness: .5, envMapIntensity: 1.0
+    });
+    const mesh = new T.InstancedMesh(geo, mat, N);
+    mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
+    mesh.castShadow = mesh.receiveShadow = TIER > 1;
+    mesh.frustumCulled = false;
+    scene.add(mesh);
+
+    const xs = new Float32Array(N), zs = new Float32Array(N);
+    const mtx = new T.Matrix4(), col = new T.Color();
+    for(let i = 0, r0 = 0; r0 < ROWS; r0++){
+      for(let c0 = 0; c0 < COLS; c0++, i++){
+        xs[i] = (c0 - (COLS - 1) / 2) * STEP;
+        zs[i] = (r0 - (ROWS - 1) / 2) * STEP - 2.2;
+        mtx.makeScale(1, REST, 1);
+        mtx.setPosition(xs[i], 0, zs[i]);
+        mesh.setMatrixAt(i, mtx);
+        mesh.setColorAt(i, col.setHex(PAL().hero));
       }
     }
-    geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    pts = new THREE.Points(geo, material);
-    group.add(pts);
+
+    const key = new T.DirectionalLight(0xfff0d8, 1.9);
+    key.position.set(-6, 8, 4);
+    if(TIER > 1){
+      key.castShadow = true;
+      key.shadow.mapSize.set(1024, 1024);
+      const c = key.shadow.camera;
+      c.left = -11; c.right = 11; c.top = 11; c.bottom = -11; c.near = 1; c.far = 26;
+    }
+    scene.add(key);
+
+    const ray = new T.Raycaster(), plane = new T.Plane(new T.Vector3(0, 1, 0), 0);
+    const ndc = new T.Vector2(), hit = new T.Vector3();
+    let px = 1e4, pz = 1e4, tx = 1e4, tz = 1e4;
+    const base = new T.Color();
+
+    return {
+      el: heroSlot, scene, cam,
+      theme(){
+        scene.fog.color.copy(readBG());
+        const p = PAL();
+        for(let i = 0; i < N; i++) mesh.setColorAt(i, col.setHex(p.hero));
+        mesh.instanceColor.needsUpdate = true;
+      },
+      update(t, dt, b){
+        const sN = Math.min(1, scrollY / Math.max(1, innerHeight));
+        // Caméra haute : vue plus plongeante, l'horizon remonte dans la
+        // bande laissée libre par le dégradé et la trame des dalles se lit.
+        // Trop basse, la plaque n'occupe que le bas de la colonne — c'est-
+        // à-dire exactement la zone qu'on masque pour le paragraphe.
+        cam.position.set(0, 6.2 + sN * 1.7, 9.5 - sN * 2.4);
+        cam.lookAt(0, 0, -1 - sN * 1.6);
+
+        // Le curseur est projeté sur le sol réel de la scène
+        const inside = ptr.x >= b.left && ptr.x <= b.right && ptr.y >= b.top && ptr.y <= b.bottom;
+        if(inside){
+          ndc.x =  ((ptr.x - b.left) / b.width)  * 2 - 1;
+          ndc.y = -((ptr.y - b.top)  / b.height) * 2 + 1;
+          ray.setFromCamera(ndc, cam);
+          if(ray.ray.intersectPlane(plane, hit)){ tx = hit.x; tz = hit.z; }
+        } else { tx = 1e4; tz = 1e4; }
+        const k = 1 - Math.pow(.0025, dt);          // amorti indépendant du framerate
+        px += (tx - px) * k; pz += (tz - pz) * k;
+
+        base.setHex(PAL().hero);
+        const arr = mesh.instanceMatrix.array, cArr = mesh.instanceColor.array;
+        for(let i = 0; i < N; i++){
+          const dx = xs[i] - px, dz = zs[i] - pz;
+          let f = 1 - Math.min(1, Math.sqrt(dx * dx + dz * dz) / RAD);
+          f = f * f * (3 - 2 * f);                   // lissage
+          const breath = Math.sin(t * .8 + xs[i] * .45 + zs[i] * .3) * .5 + .5;
+          arr[i * 16 + 5] = REST + f * LIFT + breath * .03;
+          const g = f * f;                           // l'or ne prend qu'au sommet
+          cArr[i * 3]     = base.r + (GOLD.r - base.r) * g;
+          cArr[i * 3 + 1] = base.g + (GOLD.g - base.g) * g;
+          cArr[i * 3 + 2] = base.b + (GOLD.b - base.b) * g;
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate  = true;
+      }
+    };
   }
+
+  /* ── Fabrique commune aux objets posés ────────────────────────
+     Chacun apparaît en grandissant à son entrée dans l'écran, tourne
+     lentement pour faire courir les reflets, et suit le curseur. */
+  function objectSlot(el, env, opts, build){
+    const scene = new T.Scene();
+    scene.environment = env;
+    const cam = new T.PerspectiveCamera(opts.fov || 32, 1, .05, 40);
+    cam.position.set(opts.cam[0], opts.cam[1], opts.cam[2]);
+    cam.lookAt(0, opts.look || 0, 0);
+
+    const pivot = new T.Group();
+    scene.add(pivot);
+    const spin = new T.Group();
+    pivot.add(spin);
+    const parts = build(spin, scene);
+
+    let yaw = 0, pit = 0;
+    return {
+      el, scene, cam, theme: parts && parts.theme,
+      update(t, dt, b){
+        const p = Math.min(1, (t - this.t0) / 1.1);
+        const e = ease(p);
+        pivot.scale.setScalar(.72 + .28 * e);
+        pivot.position.y = (1 - e) * -.35;
+
+        const nx = Math.max(-1, Math.min(1, (ptr.x - (b.left + b.width / 2)) / (innerWidth * .5)));
+        const ny = Math.max(-1, Math.min(1, (ptr.y - (b.top + b.height / 2)) / (innerHeight * .5)));
+        const k = 1 - Math.pow(.02, dt);
+        yaw += (nx * .5 - yaw) * k;
+        pit += (ny * .3 - pit) * k;
+
+        spin.rotation.y = t * (opts.spin === undefined ? .28 : opts.spin) + yaw;
+        pivot.rotation.x = pit;
+        if(parts && parts.update) parts.update(t, dt);
+      }
+    };
+  }
+
+  /* ═══ 2. GRAPHISME — la pile de tirages ═══
+     Du papier, pas du plastique : une matière mate à voile de surface
+     (sheen), qui rend la fibre en lumière rasante. Une feuille sur six
+     est en or : la pièce d'identité au milieu du tirage. */
+  function printScene(el, env){
+    return objectSlot(el, env, { cam: [0, 1.9, 2.9], look: .05, fov: 34, spin: .18 }, g => {
+      const paper = new T.MeshPhysicalMaterial({
+        color: PAL().paper, roughness: .84, metalness: 0,
+        sheen: 1, sheenRoughness: .7, sheenColor: new T.Color(0xffffff),
+        envMapIntensity: .8
+      });
+      const gold = new T.MeshStandardMaterial({
+        color: GOLD, metalness: 1, roughness: .17, envMapIntensity: 1.25
+      });
+      const sheet = chamferBox(1.3, .035, .92, .007);
+      for(let i = 0; i < 6; i++){
+        const m = new T.Mesh(sheet, i === 2 ? gold : paper);
+        m.position.set((i % 2 ? .05 : -.045) * i, i * .055 - .14, (i % 3 === 0 ? .04 : -.03) * i);
+        m.rotation.y = (i - 2.5) * .04;
+        g.add(m);
+      }
+      const sh = contactShadow(2.6, PAL().shadow);
+      sh.position.y = -.22;
+      g.parent.add(sh);              // hors du groupe tournant
+      return { theme(){ paper.color.set(PAL().paper); } };
+    });
+  }
+
+  /* ═══ 3. CINÉMA — l'objectif ═══
+     Un profil de révolution donne le fût, ses bagues et ses gorges en
+     une seule géométrie. La lentille frontale n'est pas transparente :
+     un vrai bloc optique se lit comme un miroir sombre. L'irisation
+     rejoue le traitement anti-reflet — c'est elle qui fait « photo ». */
+  function lensScene(el, env){
+    return objectSlot(el, env, { cam: [0, .9, 3.5], look: 0, fov: 33, spin: .22 }, g => {
+      // Le fût est une surface de révolution : le faire tourner sur son
+      // axe ne montrerait rien. On l'incline dans un groupe interne, et
+      // c'est l'ensemble incliné qui tourne — là, la lumière balaie.
+      const tilt = new T.Group();
+      tilt.rotation.x = .82;          // la frontale s'ouvre vers le spectateur
+      g.add(tilt);
+
+      // Long et étroit : trop court, le fût se lit comme une tasse.
+      // Les décrochements sont les bagues de mise au point et de zoom.
+      const prof = [
+        [0, -.86], [.33, -.86], [.35, -.81], [.35, -.50], [.44, -.46], [.44, -.12],
+        [.36, -.08], [.36,  .20], [.46,  .25], [.46,  .45], [.50,  .49], [.50,  .60], [.44,  .62]
+      ].map(p => new T.Vector2(p[0], p[1]));
+
+      const barrel = new T.Mesh(
+        new T.LatheGeometry(prof, 72),
+        new T.MeshStandardMaterial({ color: 0x0e0f12, metalness: 1, roughness: .36, envMapIntensity: 1.1 })
+      );
+      tilt.add(barrel);
+
+      // Bloc optique : calotte sphérique, miroir sombre irisé
+      const R = .80, r = .44;
+      const glass = new T.Mesh(
+        new T.SphereGeometry(R, 48, 24, 0, Math.PI * 2, 0, Math.asin(r / R)),
+        new T.MeshPhysicalMaterial({
+          color: 0x05070d, metalness: 0, roughness: .03,
+          clearcoat: 1, clearcoatRoughness: .02, ior: 1.62, envMapIntensity: 2.4,
+          iridescence: 1, iridescenceIOR: 1.32, iridescenceThicknessRange: [120, 420]
+        })
+      );
+      glass.position.y = .61 - Math.sqrt(R * R - r * r);
+      tilt.add(glass);
+
+      // Bague de désignation : l'or de la marque, à sa place
+      const ring = new T.Mesh(
+        new T.TorusGeometry(.478, .013, 12, 72),
+        new T.MeshStandardMaterial({ color: GOLD, metalness: 1, roughness: .15, envMapIntensity: 1.3 })
+      );
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = .35;
+      tilt.add(ring);
+
+      const sh = contactShadow(2.2, PAL().shadow * .85);
+      sh.position.y = -.78;
+      g.parent.add(sh);
+      return null;
+    });
+  }
+
+  /* ═══ 4. WEB — la dalle ═══
+     Verre noir sous vernis, châssis aluminium, filet d'or au pied.
+     Le vernis (clearcoat) est ce qui distingue un écran d'un simple
+     rectangle noir : il porte un reflet net par-dessus la matière. */
+  function slabScene(el, env){
+    return objectSlot(el, env, { cam: [0, .62, 3.4], look: 0, fov: 33, spin: 0 }, (g, scene) => {
+      const frame = new T.Mesh(
+        chamferBox(1.24, 1.78, .10, .018),
+        new T.MeshStandardMaterial({ color: PAL().metal, metalness: 1, roughness: .3, envMapIntensity: 1.05 })
+      );
+      g.add(frame);
+
+      const glassMat = new T.MeshPhysicalMaterial({
+        color: 0x090b0f, metalness: .1, roughness: .05,
+        clearcoat: 1, clearcoatRoughness: .02, envMapIntensity: 1.5
+      });
+      const glass = new T.Mesh(chamferBox(1.09, 1.63, .02, .004), glassMat);
+      glass.position.z = .052;
+      g.add(glass);
+
+      const bar = new T.Mesh(
+        chamferBox(1.09, .028, .02, .004),
+        new T.MeshStandardMaterial({ color: GOLD, metalness: 1, roughness: .16, envMapIntensity: 1.3 })
+      );
+      bar.position.set(0, -.74, .062);
+      g.add(bar);
+
+      const sh = contactShadow(2.6, PAL().shadow * .9);
+      sh.position.y = -.95;
+      g.parent.add(sh);
+
+      return {
+        theme(){ frame.material.color.set(PAL().metal); },
+        // += : objectSlot a déjà posé l'orientation suivie du curseur
+        update(t){ g.rotation.y += Math.sin(t * .35) * .42; }
+      };
+    });
+  }
+
+  /* ═══ 5. DIFFÉRENCE — les trois anneaux ═══
+     Trois métiers, un seul axe. Ils tournent ensemble, jamais alignés :
+     c'est l'illustration littérale de la section. */
+  function ringsScene(el, env){
+    return objectSlot(el, env, { cam: [0, .55, 3.6], look: 0, fov: 34, spin: .14 }, g => {
+      const steel = new T.MeshStandardMaterial({ color: PAL().metal, metalness: 1, roughness: .24, envMapIntensity: 1.1 });
+      const gold  = new T.MeshStandardMaterial({ color: GOLD, metalness: 1, roughness: .16, envMapIntensity: 1.3 });
+      const geo   = new T.TorusGeometry(.78, .028, 18, 110);
+      const rings = [];
+      [[0, 0, gold], [Math.PI / 3, .5, steel], [-Math.PI / 3, -.5, steel]].forEach(([rx, rz, m]) => {
+        const t3 = new T.Mesh(geo, m);
+        t3.rotation.set(rx, 0, rz);
+        g.add(t3); rings.push(t3);
+      });
+      return {
+        theme(){ steel.color.set(PAL().metal); },
+        update(t){
+          rings[1].rotation.y =  t * .5;
+          rings[2].rotation.y = -t * .38;
+        }
+      };
+    });
+  }
+
+  /* ═══ 6. CONTACT — le sceau ═══
+     Un monolithe d'or poli sur son socle. C'est l'objet le plus simple
+     de la page, et le plus exigeant : rien ne rattrape un métal raté. */
+  function sealScene(el, env){
+    return objectSlot(el, env, { cam: [0, 1.0, 5.6], look: 0, fov: 30, spin: 0 }, g => {
+      // roughness .22 plutôt que .13 : un or trop poli ne renvoie qu'une
+      // pièce sombre. Un peu de diffusion lui fait capter toute la nappe.
+      const gold = new T.MeshStandardMaterial({
+        color: GOLD, metalness: 1, roughness: .22, envMapIntensity: 1.5
+      });
+      const stone = new T.MeshStandardMaterial({
+        color: PAL().dark, metalness: .55, roughness: .55, envMapIntensity: .8
+      });
+
+      const mono = new T.Mesh(chamferBox(.86, 2.15, .24, .028), gold);
+      mono.position.y = .18;
+      g.add(mono);
+
+      const groove = new T.Mesh(chamferBox(.88, .022, .26, .006), stone);
+      groove.position.y = .58;
+      g.add(groove);
+
+      const base = new T.Mesh(chamferBox(1.5, .1, .62, .018), stone);
+      base.position.y = -.94;
+      g.add(base);
+
+      const sh = contactShadow(3.2, PAL().shadow);
+      sh.position.y = -.99;
+      g.parent.add(sh);
+
+      return {
+        theme(){ stone.color.set(PAL().dark); },
+        // .55 de biais constant : de face, le monolithe n'est qu'un
+        // rectangle jaune. Il lui faut deux faces pour exister.
+        update(t){ g.rotation.y += .55 + Math.sin(t * .3) * .35; }
+      };
+    });
+  }
+
+  /* ── Câblage ──────────────────────────────────────────────────── */
+  const hero = heroScene(bg.env);
+  bg.slots.push(hero);
+
+  const builders = { print: printScene, lens: lensScene, slab: slabScene, rings: ringsScene, seal: sealScene };
+  document.querySelectorAll('[data-gl-scene]').forEach(el => {
+    const make = builders[el.dataset.glScene];
+    if(make) fg.slots.push(make(el, fg.env));
+  });
+
+  const stages = [bg, fg];
+  const allSlots = stages.flatMap(s => s.slots);
+  allSlots.forEach(s => { s.t0 = 0; s.seen = false; });
 
   function resize(){
-    const r = cv.getBoundingClientRect();
-    if(!r.width || !r.height) return;
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(r.width, r.height, false);
-    camera.aspect = r.width / r.height;
-    camera.updateProjectionMatrix();
-    buildGrid(camera.aspect);
+    for(const s of stages){ s.r.setPixelRatio(DPR); s.r.setSize(innerWidth, innerHeight, false); }
   }
-  resize();
-  addEventListener('resize', resize, {passive:true});
+  addEventListener('resize', resize, { passive: true });
 
-  // ── Curseur projeté sur le plan de la grille ──
-  const ray   = new THREE.Raycaster();
-  const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-  const ndc   = new THREE.Vector2();
-  const hit   = new THREE.Vector3();
-  let pointerIn = false;
+  new MutationObserver(() => {
+    readBG();
+    const p = PAL();
+    for(const s of stages) s.r.toneMappingExposure = p.exposure * s.expo;
+    for(const s of allSlots) if(s.theme) s.theme();
+  }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
 
-  hero.addEventListener('pointermove', e=>{
-    const r = cv.getBoundingClientRect();
-    ndc.x =  ((e.clientX - r.left) / r.width)  * 2 - 1;
-    ndc.y = -((e.clientY - r.top)  / r.height) * 2 + 1;
-    pointerIn = true;
-  }, {passive:true});
-  hero.addEventListener('pointerleave', ()=>{ pointerIn = false; });
-
-  // ── Défilement : le plan bascule et révèle sa profondeur ──
-  let scrollN = 0;
-  addEventListener('scroll', ()=>{
-    scrollN = Math.min(1, scrollY / Math.max(1, innerHeight));
-  }, {passive:true});
-
-  new MutationObserver(()=>{
-    const c = readColors();
-    uniforms.uBase.value.copy(c.base);
-    uniforms.uGold.value.copy(c.gold);
-    uniforms.uAlpha.value = isLight() ? .20 : .30;
-  }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
-
-  let visible = true;
-  new IntersectionObserver(es=>{ visible = es[0].isIntersecting; }, {threshold:0}).observe(hero);
-
-  const clock = new THREE.Clock();
-  let tiltX = 0, tiltY = 0;
-
-  renderer.setAnimationLoop(()=>{
-    if(!visible || document.hidden) return;
-    uniforms.uTime.value = clock.getElapsedTime();
-
-    // Le pointeur suit le plan réellement incliné
-    if(pointerIn){
-      plane.normal.set(0, 0, 1).applyEuler(group.rotation);
-      ray.setFromCamera(ndc, camera);
-      if(ray.ray.intersectPlane(plane, hit)){
-        group.worldToLocal(hit);
-        uniforms.uPointer.value.set(hit.x, hit.y);
-      }
-    } else {
-      uniforms.uPointer.value.set(999, 999);
-    }
-
-    // Bascule progressive, amortie
-    tiltX += (scrollN * .42 - tiltX) * .06;
-    tiltY += (ndc.x * .10 * (pointerIn ? 1 : 0) - tiltY) * .05;
-    group.rotation.x = tiltX;
-    group.rotation.y = tiltY;
-    camera.position.z = 12 - scrollN * 1.6;
-
-    renderer.render(scene, camera);
-  });
-
-  cv.classList.add('on');
-  document.documentElement.dataset.gl = 'on';
+  /* ── Boucle unique : une seule horloge, un seul rAF ─────────────
+     Chaque objet n'est dessiné que si sa boîte touche l'écran ; le
+     ciseau limite le rendu à cette boîte exacte. */
+  // Avant la première image : c'est cet attribut qui fait exister les
+  // emplacements dans la mise en page. Les mesurer avant lui ne donnerait
+  // que des rectangles vides.
+  root.dataset.gl = 'on';
   document.dispatchEvent(new CustomEvent('trt:gl-ready'));
+
+  const clock = new T.Clock();
+  let raf = 0;
+
+  function frame(){
+    raf = requestAnimationFrame(frame);
+    if(document.hidden) return;
+    const dt = Math.min(.05, clock.getDelta());
+    const t  = clock.elapsedTime;
+    const H  = innerHeight;
+
+    for(const st of stages){
+      st.r.setScissorTest(false);
+      st.r.clear();
+      st.r.setScissorTest(true);
+      for(const s of st.slots){
+        const b = s.el.getBoundingClientRect();
+        if(b.width < 2 || b.height < 2 || b.bottom < -80 || b.top > H + 80) continue;
+        if(!s.seen){ s.seen = true; s.t0 = t; }
+        st.r.setViewport(b.left, H - b.bottom, b.width, b.height);
+        st.r.setScissor(b.left, H - b.bottom, b.width, b.height);
+        s.cam.aspect = b.width / b.height;
+        s.cam.updateProjectionMatrix();
+        s.update(t, dt, b);
+        st.r.render(s.scene, s.cam);
+      }
+    }
+  }
+  frame();
 }
 </script>
 </body>
