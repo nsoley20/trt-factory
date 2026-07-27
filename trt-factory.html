@@ -1484,6 +1484,15 @@ footer {
 }
 .gl-slot--rings { width:100%; height:clamp(130px,16vh,200px); }
 
+/* Portfolio — la vitrine de planches, en bandeau au-dessus des onglets */
+/* max-width : dans un bandeau pleine largeur, les trois planches se
+   perdraient au milieu du vide — c'est la hauteur qui limite leur taille,
+   pas la largeur. */
+.gl-slot--boards {
+  height:clamp(220px,29vh,360px); max-width:880px;
+  margin:clamp(20px,3vw,40px) var(--pad-x) clamp(26px,4vw,52px);
+}
+
 /* Contact — le sceau occupe l'espace libre de la colonne gauche */
 /* max-width : le sceau est un monolithe vertical, un emplacement large et
    plat le réduirait à un trait au milieu du vide. */
@@ -2028,6 +2037,9 @@ footer {
       <p class="sec-lead">Trois portfolios, un par métier. Celui du graphiste est en ligne ; les deux autres arrivent.</p>
     </div>
   </div>
+
+  <!-- Mockups : les identités livrées, posées sur des planches de présentation -->
+  <div class="gl-slot gl-slot--boards" data-gl-scene="boards" aria-hidden="true"></div>
 
   <!-- ONGLETS -->
   <div class="ptf-tabs" role="tablist" aria-label="Portfolios par métier">
@@ -3298,9 +3310,11 @@ async function boot(){
 
         const nx = Math.max(-1, Math.min(1, (ptr.x - (b.left + b.width / 2)) / (innerWidth * .5)));
         const ny = Math.max(-1, Math.min(1, (ptr.y - (b.top + b.height / 2)) / (innerHeight * .5)));
+        // Débattement réglable : un objet isolé supporte ±29°, un triptyque
+        // non — au-delà de ~10° ses éléments se recouvrent.
         const k = 1 - Math.pow(.02, dt);
-        yaw += (nx * .5 - yaw) * k;
-        pit += (ny * .3 - pit) * k;
+        yaw += (nx * (opts.yaw === undefined ? .5 : opts.yaw) - yaw) * k;
+        pit += (ny * (opts.pit === undefined ? .3 : opts.pit) - pit) * k;
 
         spin.rotation.y = t * (opts.spin === undefined ? .28 : opts.spin) + yaw;
         pivot.rotation.x = pit;
@@ -3495,11 +3509,78 @@ async function boot(){
     });
   }
 
+  /* ═══ 7. PORTFOLIO — la vitrine de planches ═══
+     Un mockup, ce n'est rien d'autre qu'un visuel posé sur un objet
+     éclairé. Plutôt que d'acheter des PSD, on monte la scène : les
+     planches de branding déjà présentes dans la section deviennent des
+     tirages contrecollés, dans le même studio que le reste du site.
+
+     Les textures pointent sur les MÊMES URL que les <img> de la section :
+     le cache HTTP ne télécharge chaque fichier qu'une fois, la vitrine ne
+     coûte donc aucun octet de plus. Elles arrivent de façon asynchrone —
+     le carton nu s'affiche en attendant, jamais de trou. */
+  function boardsScene(el, env){
+    const SRC = [
+      'portfolio/biyassi-gn.jpg',
+      'portfolio/chic-en-friperie.jpg',
+      'portfolio/como-n-casa.jpg'
+    ];
+    return objectSlot(el, env, {
+      cam: [0, .5, 3.5], look: 0, fov: 34, spin: 0, yaw: .16, pit: .1
+    }, g => {
+      const loader = new T.TextureLoader();
+      const aniso  = fg.r.capabilities.getMaxAnisotropy();
+      // Géométries partagées par les trois planches : une seule fois sur le GPU.
+      const core  = chamferBox(1.16, 1.51, .05, .01);     // le carton
+      const face  = new T.PlaneGeometry(1.08, 1.43);      // le tirage (ratio 3:4)
+      const carton = new T.MeshStandardMaterial({
+        color: PAL().paper, roughness: .92, metalness: 0, envMapIntensity: .7
+      });
+      const boards = [];
+
+      SRC.forEach((src, i) => {
+        const b = new T.Group();
+        b.add(new T.Mesh(core, carton));
+
+        const printed = new T.MeshStandardMaterial({
+          color: 0xffffff, roughness: .6, metalness: 0, envMapIntensity: .85
+        });
+        loader.load(src, tex => {
+          tex.colorSpace = T.SRGBColorSpace;
+          tex.anisotropy = aniso;          // les planches sont vues de biais
+          printed.map = tex;
+          printed.needsUpdate = true;
+        }, undefined, () => {});           // image absente : le carton reste nu
+
+        const sheet = new T.Mesh(face, printed);
+        sheet.position.z = .027;
+        b.add(sheet);
+
+        b.position.set((i - 1) * 1.62, 0, i === 1 ? .18 : 0);
+        b.rotation.y = (1 - i) * .34;      // les deux latérales rentrent vers nous
+        g.add(b);
+        boards.push(b);
+      });
+
+      const sh = contactShadow(4.4, PAL().shadow * .75);
+      sh.position.y = -.8;
+      g.parent.add(sh);
+
+      return {
+        theme(){ carton.color.set(PAL().paper); },
+        update(t){ boards.forEach((b, i) => { b.position.y = Math.sin(t * .5 + i * 1.1) * .035; }); }
+      };
+    });
+  }
+
   /* ── Câblage ──────────────────────────────────────────────────── */
   const hero = heroScene(bg.env);
   bg.slots.push(hero);
 
-  const builders = { print: printScene, lens: lensScene, slab: slabScene, rings: ringsScene, seal: sealScene };
+  const builders = {
+    print: printScene, lens: lensScene, slab: slabScene,
+    rings: ringsScene, seal: sealScene, boards: boardsScene
+  };
   document.querySelectorAll('[data-gl-scene]').forEach(el => {
     const make = builders[el.dataset.glScene];
     if(make) fg.slots.push(make(el, fg.env));
